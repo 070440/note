@@ -869,3 +869,92 @@ ray-geometry相交检测的原理
 ### console.log() 的延迟打印问题
 chrome的控制台出于性能考虑,对引用数据类型的数据读取是存在延迟的,默认读取一层数据,当你点击展开时，会重新去堆内存中读取属性值和下一层的数据
 
+
+## 2.22
+### Vue中extend和mixins,extends
+Vue.component是用来注册或获取全局组件的方法
+```
+Vue.component('global-component', Vue.extend(baseOptions));
+Vue.component('global-component', baseOptions);
+上面两行代码等价
+//获取注册的组件
+var MyComponent = Vue.component('my-component')
+```
+Vue.extend扩展Vue构造器,从而用预定义选项创建可复用的组件构造器
+
+mixins是合并一个对象，mixins中的data会合并到data中,有冲突的话，data中数据覆盖mixins中的数据，钩子函数则是先执行mixins的钩子函数
+
+### composition-api
+ref  (用来包装基础数据类型)
+reactive (用来包装引用数据类型)
+toRefs  (将reactive包装后的引用数据类型的值, 通过ref包装为响应式)
+toRef   (将reactive包装后的引用数据类型的值, 通过ref包装为响应式, 但可新增属性)
+readonly  (被readonly包装后, 变为只读属性, 不可更改数据 ）
+readonly() 和 Object.freeze() 冻结属性有些相似
+不同的 是 Object.freeze() 直接将原数据冻结
+readonly() 返回一个新的数据，不改变原数据
+watchEffect 
+computed
+生命周期
+
+
+### Object.freeze,Object.seal,Object.preventExtensions
+Object.freeze过程
+1.设置Object.preventExtensions(),禁止添加新属性
+2.设置writable为false,禁止修改
+3.设置configurable为false,禁止配置
+4.禁止更改访问器属性
+Object.freeze禁止了所有可设置内容
+Object.isFrozen()判断一个对象是否是冻结对象
+
+Object.seal过程
+1.设置Object.preventExtension(), 禁止添加新属性
+2.设置configurable为false, 禁止配置
+3.禁止更改访问器属性
+
+Object.freeze 禁止修改对象的所有属性
+Object.seal   可以修改属性，但不能新增，删除属性
+
+### 函数传参
+基本类型传值，复杂数据类型传引用
+
+## 2.24
+### 自定义插件
+外界调用Vue.use(), 就会调用本身的install方法，同时传一个Vue这个类的参数
+```
+const Loading={
+    install:function(Vue){
+        Vue.component('Loading',LoadingComponent)
+    }
+}
+```
+外界在use这个组建的时候，就会调用本身的install方法,同时传一个Vue这个类的参数
+全局组件
+```
+Vue.component('globalcomponent',globalcomponent)
+```
+局部组件
+在组件中注册子组件 
+```
+components: {subcomponent}
+```
+编写一个插件需要注意的东西
+
+插件哪些数据是需要从外界获取的，那些属性是computed,watch,数据更新之后如何响应式的更新
+遍历所有的子节点，props接收所有的属性
+### 碰撞检测
+碰撞检测，最主要的就是包围盒，常用的包围盒有Sphere包围盒,AABB包围盒,OBB包围盒,k-Dops
+Sphere包围球法: 包含目标对象的最小球体，紧密性差，包围的目标对象会产生大量的冗余空间，剔除效率低，但是其构
+造简单、存储空间小且由于球的对称性，不受旋转变化的影响，只需要根据平移量对球心位置进行变化，不需要对包围球结构进
+行任何更新操作，适用于检测精度要求不高的运动环境，且很容易计算两个物体的包围球是否发生碰撞。
+AABB六边形包围法: 是一个简单的六面体
+OBB: 更加精确，但计算也更多
+
+### MVC MVP MVVM
+MVC Model View Controller
+MVVM Vue实现的是MVVM模式
+在Vue中,
+View指的是各种template, 
+ViewModel指的是对应的js,声明绑定的元素及绑定的数据, 
+Binder处理template与js的绑定逻辑，
+Model指的是获取数据的逻辑
