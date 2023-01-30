@@ -2213,7 +2213,7 @@ libuv的主要工作分为以下两部分:
 围绕epoll, 处理那些被epoll支持的IO操作
 线程池,处理那些不被epoll支持的IO操作
 
-![./assets/libuv架构图.png]
+![libuv](./assets/libuv架构图.png)
 
 epoll简介
 
@@ -2663,7 +2663,7 @@ renderProps返回的是render函数中的东西,而HOC返回的是被包裹的�
 React Hooks设计理念
 
 基本原理
-![ReactHooks](./assets/ReactHooks.webp)
+![ReactHooks](./assets/ReactHooks.jpg)
 
 通常我们优化组件性能时,会优先采用纯组件的方式来减少单个组件的渲染次数
 
