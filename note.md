@@ -2370,10 +2370,377 @@ http.createServer((req, res) => {
 
 使用流基类
 可读流-JSON行解析器
-
 继承自steam.Readable类
 并实现一个_read(size)方法
 
+可写流
+可写的流可用于输出数据到底层I/O
+继承自stream.Writable
+实现一个_write方法向底层源数据发送数据
+
+双工流
+双工流允许发送和接收数据
+继承自stream.Duplex
+实现_read 和 _write方法
+
+转换流
+继承自stream.Transform
+实现_transform方法
+
+测试流
+使用Node内置的断言模块测试
+
+### 文件系统
+POSIX文件系统
+
+```
+const fs = require('fs')
+const assert = require('assert');
+
+const fd = fs.openSync('./file.txt', 'w+');
+const writeBuf = new Buffer('some data to write');
+const writeSync(fd, readBuf, 0, writeBuf.length, 0);
+
+const readBuf = new Buffer(writeBuf.length);
+fs.readSync(fd, readBuf, 0, writeBuf.length, 0);
+assert.equal(writeBuf.toString(), readBuf.toString());
+
+fs.closeSync(fd);
+
+```
+
+### 读写流
+```
+const fs = require('fs');
+const readable = fs.createReadStream('./txt')
+const writable = fs.createWriteStream('./txt')
+readable.pipe(writable) 
+```
+
+### 文件监控
+fs.watchFile比fs.watch低效，但更好用
+
+### 文件锁
+协同多个进程同时访问一个文件,保证文件的完整性以及数据不能丢失:
+
+强制锁 在内核级别执行
+咨询锁 非强制,只在涉及到进程订阅了相同的锁机制
+node-fs-ext通过flock锁住一个文件
+
+使用锁文件
+进程A尝试创建一个锁文件,并且成功了
+进程A已经获得了这个锁,可以修改共享的资源
+进程B尝试创建一个锁文件,但失败了,无法修改共享的资源
+
+Node实现锁文件
+使用独占标记创建锁文件
+```
+fs.writeFile(
+    'config.lock', 
+    process.pid,
+    { flogs: 'wx'},
+    (err) => {
+        if( err ) return console.error(err);
+    }
+)
+```
+使用mkdir创建锁文件
+```
+fs.mkdir('config.lock', (err) => {
+    if(err) return console.error(err);
+    fs.writeFile(`/config.lock/${process.pid}`, (err) => {
+        if(err) return console.error(err);
+    })
+})
+```
+
+递归文件操作
+
+
+监视文件和文件夹
+```
+const fs = require('fs');
+fs.watch('./watchdir', console.log); //稳定且快
+fs.watchFile('./watchdir', console.log); //跨平台
+```
+
+逐行地读取文件流
+```
+const fs = require('fs');
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: fs.createReadStream('/etc/hosts'),
+    crlfDelay: Infinity
+})
+
+rl.on('line', (line) => {
+    console.log(`cc ${line}`)
+    const extract = line.match()
+})
+```
+
+TCP客户端
+
+NodeJS使用net模块创建TCP连接和服务
+
+启动与测试TCP
+```
+const assert = require('assert');
+const net = require('net');
+let client = 0;
+let expectedAssertions = 2;
+
+const server = net.createServer(function( client ) {
+    clients++;
+    const clientId = clients;
+    console.log('Client connected', clientId);
+
+    client.on('end', function() {
+        console.log('Client disconnected:', clientId);
+    });
+
+    client.write('Welcome client: ' + clientId);
+    client.pipe(client);
+})
+
+
+```
+
+UDP客户端
+
+利用dgram模块创建数据包socket,然后利用socket.send发送数据
+
+文件发送服务
+```
+const dgram = require('dgram')
+const fs = require('fs');
+const port = 41230;
+const defaultSize = 16;
+
+function Client(remoteIP) {
+    const inStream = fs.createReadStream(__filename)
+    const socket = dgram.createSocket('udp4');
+
+    inStream.on('readable', function() {
+        sendData();
+    });
+
+    function sendData() {
+        const message = inStream.read(defaultSize); //读取数据块
+        
+        if(!message) {
+            return socket.unref();
+        }
+
+        socket.send(message, 0, message.length, port, remoteIP, function() {
+            sendData();
+        });
+    }
+}
+
+function Server() {
+    const socket = dgram.createSocket('udp4');
+
+    socket.on('message', function(msg) {
+        process.stdout.write(msg.toString());
+    })
+
+    socket.on('listening', function() {
+        console.log('Serve ready:', socket.address());
+    })
+
+    socket.bind(port);
+}
+
+if(process.argv[2] === 'client') {
+    new Client(process.argv[3]);
+} else {
+    new Server();
+}
+```
+
+HTTP客户端
+
+使用http.createServer 和 http.createClient 运行HTTP服务
+
+
+## 1.11
+### 粒子系统
+粒子系统是个体发射器的集合
+Particle System 
+Spark Emitter + Flame Emitter + Smoke Emitter
+
+Particle Spawn Position （粒子发射位置）
+
+Particle Spawn Mode （粒子发射模式）
+
+Simulate 
+1.Gravity + Viscous Drag + Wind Fields
+2.Simulate controls how the particles change over time
+Each frame: Acceleration updates Velocity
+Velocity updates position
+3.position & rotation
+4.color & size
+5.collision
+
+Particle Type
+1.Billboard Particle
+2.Mesh Particle
+3.Ribbon Particle 样条曲线插值
+Catmull-Rom interpolation
+
+Particle Rendering
+Particle Sort
+Global
+sort by emitter
+
+Full-Resolution Particles
+优化为Low Resolution Particles
+
+GPU Particle
+Processing Particles on GPU
+Particle Pool is a single buffer storage containing particles data
+通过视锥剪切
+
+粒子碰撞
+Depth Buffer Collision
+
+Particle Animation Texture 状态机存储所有的动画形态
+
+Navigation Texture  runtime behavior
+群体模拟
+
+## 1.12
+### 卷曲噪声
+在速度和动画控制上,通常首选程序方法为湍流流体设置动画,而不是模拟。
+我们提供一种基于柏林噪声的非常简单的方法来高效的生成不可压缩湍流速度长,严格遵守固体边界，
+并且其振幅可以根据需要在空间中进行调节
+
+噪声算法
+1.梯度噪声
+2.细胞噪声
+
+
+
+## 1.16
+### useEffect详解
+1. 不传递第二个参数 
+所有更新都会执行
+
+2. 传递空数组
+仅在挂载和卸载时执行
+
+3. 传递一个值
+当前值更新的时候执行
+
+4. 传入有多个值的数组
+会比较每一个值, 有一个不相等就执行
+
+5. 返回一个函数，在组件卸载时调用
+
+### UseMemo
+
+主要用于渲染过程优化，两个参数依次是计算函数和依赖状态列表，当依赖的状态发生变化时，才会触发计算函数的执行。
+如果没有指定依赖,则每一次渲染过程都会执行该计算函数
+
+### useContext
+context 是在外部 create ，内部 use 的 state，它和全局变量的区别在于，如果多个组件同时 useContext，
+那么这些组件都会 rerender，如果多个组件同时 useState 同一个全局变量，则只有触发 setState 的当前组件 rerender。
+
+
+### useRef
+useRef返回一个可变的ref对象,其.current属性初始化为传递的参数。返回的对象将持续整个组件的生命周期，事实上useRef是一个非常有用的API,
+
+### HOC
+高阶组件源于函数式编程,由于React中的组件也可以视为函数,因此天生就可以通过HOC的方式来实现代码复用。
+可以通过属性代理和反向继承来实现，HOC可以很方便的操控渲染结果,
+也可以对组件的props/state进行操作,从而可以很方便的进行复杂的代
+
+### Render Props
+renderProps就是将render方法作为props传递到子组件的方案,相比HOC的方案，renderProps可以保护原有的组件层次结构
+renderProps返回的是render函数中的东西,而HOC返回的是被包裹的组件
+
+React Hooks设计理念
+
+基本原理
+![ReactHooks](./assets/ReactHooks.webp)
+
+通常我们优化组件性能时,会优先采用纯组件的方式来减少单个组件的渲染次数
+
+class Button extends React.PureComponent {}
+
+React Hooks中采用useMemo代替,可以实现仅在某些数据变化时重新渲染组件,等同于自带了shallowEqual的shouldComponentUpdate
+
+自定义Hooks
+由于每一个Hooks API都是纯函数的概念,使用时更关注输入和输出,因此可以更好的通过组装函数的方式,
+对不同特性的基础Hooks API进行组合,创造拥有新特性的Hooks
+
+useState维护组件状态
+useEffect处理副作用
+useContext 监听 provider 更新变化
+
+```
+ const onSlide = (dir) => {
+    console.log(dir)
+  }
+  const { domRef:domRef1 } = useSlide(onSlide,'v');
+  const { domRef:domRef2 } = useSlide(onSlide,'h');
+
+  return (
+        <div className="App">
+          <input type="range" ref={domRef1}/>
+          <input type="range" ref={domRef2} style={{transform:'rotate(-90deg)',marginTop:'55px'}}/>
+        </div>
+      )
+```
+
+### React Fiber
+React会递归比对VirtualDOM树,找出需要变动的节点,然后同步更新它们,这个过程成为Reconcilation(协调)
+
+和操作系统的进程调度类似,让短进程优先执行
+
+而对于长进程，React通过Fiber架构,让自己的Reconcilation过程变成可被中断。适时让出CPU执行权，
+除了可以让浏览器及时地响应用户的交互
+
+协程
+
+协程不是系统级线程,很多时候被称为轻量级线程,微线程,纤程(fiber)等,
+其实协程和线程并不一样,协程本身是没有并发或者并行能力的,它只是一种控制流程的让出机制。
+
+普通函数的执行过程中无法被中断和恢复
+
+而React Fiber的思想和协程的概念是契合的: React渲染的过程可以被中断,可以将控制权教会浏览器,
+让位给高优先级的任务,浏览器空闲后再恢复渲染。
+
+
+
+## 1.28
+### CircleCI
+持续集成是一种软件开发实践,它基于将代码频繁集成到共享代码仓库中。然后通过自动构建验证每个签入。
+VCS -> CI SERVER -> APP SERVER
+
+开发人员在本机检查代码并提交到代码仓库
+代码仓库向CI系统发送请求(webhook)
+CI服务器运行任务(测试, 覆盖率, 检查语法等)
+CI服务器发布已保存的工件已进行测试
+如果构建或者测试失败, CI团队会向团队发出报警
+
+
+## 1.29
+### ESbuild
+js是单线程串行,esbuild是新开一个进程,然后多进程并行,充分发挥多核优势
+go是纯机器码,肯定要比JIT
+JIT(即时编译器)
+Java代码的执行过程中,首先进行前端编译,通过编译器将.java文件编译成字节码,即.class文件
+然后, 进行后端编译, 将字节码编译成机器码,在此过程中，有一个编译器将热点代码编译成本地平台相关的机器码，并进行优化。
+不使用AST，优化了构建流程
+
+Esbuild有命令行, js调用, go调用
+
+在Webpack中使用esbuild
+使用esbuild-loader替换babel-loader, ts-loader
+
+首先你需要在plugin中引用esbuild-plugin,将esbuild的相关方法挂载在webpack中
 
 
 
