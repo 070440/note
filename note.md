@@ -725,7 +725,7 @@ webgl深度缓冲
 2. 一次矩阵变换的精确性更高
 
 透视投影的剪裁规则
-在变换到裁剪空间之后，我们将赋予齐次坐标的 w 分量更加丰富的含义：作为一个临界值来判断一个经过裁剪变换后的顶点是否位于景视体内。如果变换后的坐标值 x、y、z 均在区间 [-w, w] 内，则表明该顶点在视景体内。否则，表明该顶点不在视景体内，将会被抛弃。
+在变换到裁剪空间之后，我们将赋予齐次坐标的 w 分量更加丰富的含义：作为一个临界值来判断一个经过裁剪变换后的顶点是否位于视景体内。如果变换后的坐标值 x、y、z 均在区间 [-w, w] 内，则表明该顶点在视景体内。否则，表明该顶点不在视景体内，将会被抛弃。
 
 正交投影的剪裁规则
 如果变换后的坐标值 x、y 、z 均在区间 [-1, 1] 内，则表明该顶点在视景体内。而且这里的 w 为 1，所以其裁剪的判断规则与透视投影中是一致的。
@@ -2715,6 +2715,111 @@ React会递归比对VirtualDOM树,找出需要变动的节点,然后同步更新
 而React Fiber的思想和协程的概念是契合的: React渲染的过程可以被中断,可以将控制权教会浏览器,
 让位给高优先级的任务,浏览器空闲后再恢复渲染。
 
+合作式调度
+
+requestIdleCallback API
+通过超时检查的机制来让出控制权。解决办法是: 确定一个合理的运行时长，然后在合适的检查点检测是否超时(比如每执行一个小任务)，如果超时就停止执行，将控制权交换给浏览器
+但是在浏览器繁忙的时候, 可能不会有盈余时间, 这时候requestIdleCallback回调就不会被执行。
+
+任务优先级
+
+Immediate(-1) - 这个优先级的任务会同步执行, 或者说要马上执行且不能中断
+UserBlocking(250ms) 这些任务一般是用户交互的结果, 需要即时得到反馈
+Normal (5s) 应对哪些不需要立即感受到的任务，例如网络请求
+Low (10s) 这些任务可以放后，但是最终应该得到执行. 例如分析通知
+Idle (没有超时时间) 一些没有必要做的任务 (e.g. 比如隐藏的内容), 可能会被饿死
+
+一个执行单元
+
+基于Fiber构建的执行单元，假设用户调用setState更新组件,这个待更新的任务会放入队列中，
+然后通过requestIdleCallback请求浏览器调度
+
+```
+updateQueue.push(updateTask);
+requestIdleCallback(performWork, {timeout});
+```
+
+现在浏览器有空闲或者超时了就会调用performWork来执行任务:
+
+```
+function performWork(deadline) {
+
+  // 2️⃣ 循环取出updateQueue中的任务
+  while (updateQueue.length > 0 && deadline.timeRemaining() > ENOUGH_TIME) {
+    workLoop(deadline);
+  }
+
+  // 3️⃣ 如果在本次执行中，未能将所有任务执行完毕，那就再请求浏览器调度
+  if (updateQueue.length > 0) {
+    requestIdleCallback(performWork);
+  }
+}
+
+```
+
+workLoop 的工作大概猜到了， 它会从更新队列中弹出更新任务来执行，
+每执行完一个'执行单元', 就检查一下剩余事件是否充足, 如果充足就进入执行下一个执行单元,
+反之则停止执行,保存线程,等下一次有执行权时恢复
+
+![Fiber流程图](./assets/Fiber%E6%B5%81%E7%A8%8B%E5%9B%BE.webp)
+
+我们需要对React现有的数据结构进行调整，模拟函数调用栈, 将之前需要递归进行处理的事情分解成增量的执行单元，将递归转换成迭代.
+
+使用链表结构只是一个结果，而不是目的，React 开发者一开始的目的是冲着模拟调用栈去的。
+
+调用栈最经常被用于存放子程序的返回地址。在调用任何子程序时，主程序都必须暂存子程序运行完毕后应该返回到的地址。
+因此，如果被调用的子程序还要调用其他的子程序，其自身的返回地址就必须存入调用栈，在其自身运行完毕后再行取回。
+除了返回地址，还会保存本地变量、函数参数、环境传递
+
+React Fiber 也被称为虚拟栈帧(Virtual Stack Frame), 你可以拿它和函数调用栈类比一下, 两者结构非常像:
+
+         函数调用栈        Fiber
+
+基本单位  函数          Virtual DOM 节点
+
+
+输入      函数参数      Props
+
+
+本地状态  本地变量      State
+
+
+输出      函数返回值    React Element
+
+
+下级      嵌套函数调用  子节点(child)
+
+
+上级引用   返回地址     父节点(return)
+
+Fiber 和调用栈帧一样, 保存了节点处理的上下文信息，因为是手动实现的，所以更为可控，我们可以保存在内存中，随时中断和恢复。
+Fiber 就是我们所说的工作单元，performUnitOfWork 负责对 Fiber 进行操作，并按照深度遍历的顺序返回下一个 Fiber。
+
+两个阶段的拆分
+
+两个阶段: Reconcilation 和 commit
+
+协调阶段: 可以认为是Diff阶段,这个阶段可以被中断，这个阶段会找出所有节点变更,例如节点新增,删除,属性变更等等
+这些变更React称为副作用。
+以下生命周期钩子会在协调阶段被调用
+
+constructor
+static getDerivedStateFromProps
+shouldComponentUpdate
+render
+
+提交阶段
+getSnapshotBeforeUpdate() 严格来说, 这个就是进入commit阶段前调用
+componentDidMount
+componentDidUpdate
+componentWillUnmount
+
+也就是说，在协调阶段可能被中断,恢复,恢复重做, React协调阶段的生命周期钩子可能会被调用多次
+
+例如componentWillMount可能会被调用两次,例如componentWillMount可能会被调用两次
+
+因此建议 协调阶段的生命周期钩子不要包含副作用。
+
 
 
 ## 1.28
@@ -2744,6 +2849,459 @@ Esbuild有命令行, js调用, go调用
 使用esbuild-loader替换babel-loader, ts-loader
 
 首先你需要在plugin中引用esbuild-plugin,将esbuild的相关方法挂载在webpack中
+
+
+## 2.3
+### 切线空间 Tangent Space
+
+切线空间最重要的用途之一，即法线映射
+纹理坐标就定义与切线空间。普通2维纹理坐标包含U,V
+其中U坐标增长的方向,即切线空间中的tangent轴，V坐标增加的方向，为切线空间中的bitangent轴。
+模型中不同的三角形,都有对应的切线空间,其tangent轴和bitangent轴分别位于三角形所在平面上，
+结合三角形面对应的法线,我们称tangant轴,bitangent轴,以及法线轴(N)所组成的坐标系即切线空间
+
+
+## 2.8
+### redux
+redux的诞生是为了给React应用提供【可预测化的状态管理】机制。
+Redux会将整个应用状态存储到一个地方，称为store
+这个store里面保存一颗状态树
+组件改变state的唯一方法是通过调用store的dispatch方法,触发一个action,
+这个action就被对应的reducer处理,于是state完成更新
+组件可以派发行为给store,而不是直接通知其他组件
+其它组件可以通过订阅store中的状态来刷新自己的视图
+
+创建reducer
+可以使用单独的一个reducer,也可以将多个reducer合并成一个reducer,即combineReducers()
+action发出命令后将state放入reducer加工函数中,返回新的state,对state进行加工处理
+```
+import { combineReducers } from 'redux'
+combineReducers({
+    nearby: nearbyReducer,
+    orderdetail: orderdetailReducer
+}) 
+```
+创建action
+用户是接触不到state的,只能被view触发, 所以, 这个action可以理解为指令, 
+需要发出多少动作就有多少指令
+action是一个对象，必须有一个叫type的参数，定义action类型
+
+创建的store, 使用createStore方法
+store可以理解为有多个加工机器的总工厂
+提供subscribe, dispatch, getState这些方法
+```
+import { createStore, compose, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import reducer from './reducer';
+
+const store = createStore(reducer, compose(applyMiddleware(thunk)));
+```
+React Redux将组件区分为容器组件和UI组件
+容器组件只会处理逻辑
+UI只负责显示和交互，内部不处理逻辑，状态完全由外部掌握
+
+两个核心
+Provider 
+一般我们都将顶层组件包裹在Provider组件中,这样的话，所有组件就都在react-redux的控制之下了
+但是store必须作为参数放到Provider组件中去
+
+```
+import { Provider } from "react-redux";
+ReactDOM.createRoot(document.getElementById("root")).render(
+    <Provider store={store}>
+       ....
+    </Provider>
+)
+```
+
+
+connect
+这个才是react-redux比较难的部分,在React-Redux中，UI组件负责渲染，而与store的通信全部依靠容器组件。
+因此，我们需要一个容器组件，这里我们使用[connect]建议一个容器组件
+
+
+mapStateToProps
+把state映射到props中去,其实也就是把Redux中的数据映射到React中的props
+
+mapDispatchToProps
+各种dispatch也变成了props让你可以直接使用
+
+### redux-saga
+
+redux-saga是一个redux的中间件，而中间件的作用是为redux提供额外的功能
+由于在reducers中的所有操作都是同步的并且是纯粹的，即reducers都是纯函数，纯函数是指一个函数的
+返回结果只依赖于它的参数,并且在执行过程中不会对外部产生副作用。
+
+但是在实际的应用开发中，我们会有异步操作。
+
+redux-saga提供了一些辅助函数, 用来在一些特定的action被发起到Store时派生任务
+takeEvery 和 takeLatest
+
+takeEvery
+takeEvery就像是一个流水线的洗碗工，过来一个脏盘子就直接执行后面的洗碗函数,
+一旦你请了这个洗碗工他会一直执行这个工作，绝对不会停止接盘子的监听过程和触发洗盘子函数
+
+takeLatest
+
+我们只想得到最新那个请求的响应
+
+
+
+
+## 2.9
+### Dva
+Dva基于redux, redux-saga 和 react-router的轻量级前端框架
+dva是基于react + redux 最佳实践上实现的封装方案, 简化了redux和redux-saga使用上的诸多繁琐操作
+
+数据流向
+![React数据流向](./assets/react%E6%95%B0%E6%8D%AE%E6%B5%81%E5%90%91.webp)
+
+dva是一个函数, 通过执行它可以拿到一个app对象
+app.model()添加一个模块,
+app.router()接收函数, 然后渲染函数返回值
+app.start('#root'), 通过app.router获取组件,通过app.router获取组件, 然后通过ReactDom渲染到容器
+```
+app.model({
+    namespace: 'counter',
+    state: { current: 0, highest: 0},
+    reducers: {
+        save(state, action) {
+            return { current: state.current + action.payload };
+        }
+    }
+})
+
+
+let express = require('express');
+let cors = require('cors');
+let app = express();
+app.use(cors());
+app.get('/amount', function( req, res) {
+    res.send({ num: 5});
+})
+app.listen(3000);
+
+function getAmount() {
+    return fetch('http://localhost:3000/amount', {
+        headers: {
+            "Accept": "application/json"
+        }
+    }).then(res = res.json());
+}
+
+effects: {
+    *add(action, { call, put }) {
+        let { num } = yield call(getAmount);
+        yield put({ type: 'save', payload: num });
+    }
+}
+reducers中的save方法
+this.props.dispatch({ type: 'counter/save', payload: 2})
+```
+
+## 2.15
+### RBAC权限模型(Role-Based Access Control)
+1.RBAC0模型
+   多对多  多对多
+用户 -> 角色 -> 权限
+一个用户拥有若干角色，每一个角色拥有若干权限。
+
+2.RBAC1模型
+角色继承
+
+3.RBAC2模型
+对角色进行约束控制
+
+### ORM
+ORM框架采用元数据来描述对象与关系映射的细节
+Object Relational Mapping 
+对象关系映射，它解决了对象和关系型数据库之间的数据交互问题
+面向对象编程的时候，数据很多时候都存储在对象里面，具体来说是存储在对象的各个属性中,
+
+
+## 2.16
+### nestjs装饰器
+装饰器是一种特殊的类型声明
+
+类装饰器
+主要是通过@符号添加装饰器
+他会自动把class的构造函数传入到装饰器的第一个参数target
+decorators(target)
+
+属性装饰器
+同样使用@符号给属性添加装饰器
+decorators（target， key)
+
+参数装饰器
+同样使用@符号给属性添加装饰器
+decorators(target, key, index)
+
+方法装饰器
+decorators（target, key, descriptor)
+
+### swagger
+写接口的时候自动帮你生成接口文档
+
+### 数据对象
+DTO（数据传输对象）
+
+用于表现层和应用层之间的数据交互，简单来说Model面向业务，我们通过业务来定义Model。
+而DTO是面向界面UI, 是通过UI的需求来定义的。
+通过DTO，我们实现了表现层与Model之间的解耦，表现层不引用Model
+
+BO(Business Object) 业务对象
+承载业务数据的实体
+
+PO(persistence Object) 持久化对象
+数据最终要存储，无论以何种形式存储，都必须要持久化。
+持久化，把数据（内存中的对象）保存到可永久保存的存储设备中（如磁盘）
+
+DAO(Data Access Object) 数据访问对象
+包含一些数据库的基本操作，CRUD， 和数据库打交道。
+负责将PO持久化到数据库，也负责将从将数据库查询结果映射为PO
+
+VO(Value Object) 值对象
+
+POJO(Plain Old Java Object) 简单的JAVA对象
+
+DAO，Entity，Service， Controller
+
+Entity: 实体层
+Entity层是实体层，也就是所谓的model, 也成为pojo层， 是数据库在项目中的类
+该文件包含实体的属性和对应属性的set, get方法
+
+DAO层:  持久层 主要与数据库进行交互
+DAO层 = mapper层，现在用Mybatis逆向工程生成的mapper层, 其实就是DAO层。DAO层调用entity层，
+DAO中会定义实际使用到的方法，比如增删改查。DAO层的数据源和数据库的连接的参数都是在配置文件中进行配置的
+
+Service层: 业务层 控制业务
+Service层主要负责业务模块的逻辑应用设计。先设计放接口的类，再创建实现的类，然后在配置文件中进行配置其实现的关联。
+servive层调用dao层的接口，接受DAO层返回的数据，完成项目的基本功能设计
+
+Controller层: 控制层 控制业务逻辑
+Controller层负责具体的业务模块的流程控制，controller层负责前后端的交互，接受前端请求，调用service层，
+接收service层返回的数据，最后返回具体的页面和数据到客户端
+
+Controller层
+Controller层负责具体的业务模块的流程控制，controller层负责前后端的交互, 接受前端请求， 调用service层，
+接收service层返回的数据，最后返回具体的页面和数据到客户端。
+
+Controller层像是一个服务员，他把客人（前端）点的菜（数据、请求的类型等）进行汇总什么口味、咸淡、量的多少，
+交给厨师长（Service层），厨师长则告诉沾板厨师（Dao 1）、汤料房（Dao 2）、配菜厨师（Dao 3）等（统称Dao层）
+我需要什么样的半成品，副厨们（Dao层）就负责完成厨师长（Service）交代的任务。
+
+
+## 2.21
+### Nestjs
+要创建一个Nest应用实例，我们使用了NestFactory核心类。
+nestjs有两个开箱即用的HTTP平台: express和fastify
+无论使用那种平台，它都会暴露自己的API。
+它们分别是NestExpressApplication 和 NestFastifyApplication
+
+#### 控制器
+控制器负责处理传入的请求和向客户端返回响应
+控制器的目的是接收应用的特定请求。路由机制控制那个控制器接收哪些请求。
+通常，每个控制器有多个路由，不同的路由可以执行不同的操作
+
+为了创建一个基本的控制器，我们使用类和控制器。装饰器将类与所需的元数据相关联，并使Nest能够创建路由映射
+
+路径前缀与装饰器@Get('profile')组合会为GET /customers/profile 请求生成路由映射
+在上面的示例中，当对此端点发出 GET 请求时， Nest 会将请求路由到我们的自定义的 findAll() 方法。
+
+Nest使用两种不同的操作响应选项的概念:
+
+标准: 使用这个内置方法, 当请求处理程序返回一个JavaScript对象或数组, 它将自动序列化为JSON。
+但是，当它返回一个JavaScript基本类型(例如string, number, boolean)时,
+Nest将只发送值，而不尝试序列化它。这使响应处理变得简单: 只需要返回值, 其余的由Nest负责。
+
+类库特有的:
+我们可以在函数签名处通过@Res()注入类库特定的响应对象(例如, Express)。
+使用此方法, 你就能使用由该响应对象暴露的原生响应处理函数。例如，使用Express,
+您可以使用response.status(200).send() 构建响应
+
+处理程序有时需要客户端的请求细节
+
+为了与底层HTTP平台之间的类型兼容，Nest提供了@Res()和@Response()装饰器
+在请求处理函数中注入@Res或者@Response时，会将Nest至于该处理函数的特定于库的模式下，并负责管理响应。
+这样做时,必须通过调用response对象发出某种响应,否则HTTP服务器将挂起。
+
+Nest 为所有标准的 HTTP 方法提供了相应的装饰器：@Put()、@Delete()、@Patch()、@Options()、以及 @Head()。
+此外，@All() 则用于定义一个用于处理所有 HTTP 请求方法的处理程序。
+
+状态码
+响应的状态码总是默认200，除了POST请求(默认响应状态码为201)，我们可以通过在处理函数外添加@HttpCode()装饰器来轻松更改此行为
+通常状态码不是固定的，而是取决于各种因素。在这种情况下，您可以使用类库特有的response
+
+Headers
+@Header('Cache-Control', 'none')
+
+重定向
+@Redirect('https://docs.nestjs.com', 302)
+
+子域路由
+@Controller装饰器可以接收一个host选项,以要求传入请求的HTTP主机匹配某个特定的值
+
+请求负载
+确定DTO模式,DTO是一个对象,它定义了如何通过网络发送数据。
+
+#### 提供者
+Provider只是一个用@Injectable装饰器注释的类
+服务负责数据存储和检索
+Provider是通过类构造函数注入的
+
+自定义提供者
+
+可选提供者
+类可能依赖于一个配置对象，如果没有传递，则应使用默认值。
+在这种情况下，关联变为可选的，provider不会因为缺少配置导致错误。
+
+注册提供者
+```
+@Module({
+    controllers: [CatsController],
+    providers: [CatsService],
+})
+```
+
+#### 模块
+模块是具有@Module装饰器的类。@Module装饰器提供了元数据。
+每个Nest应用程序至少一个模块,即根模块。
+
+功能模块
+@module装饰器接收一个描述模块属性的对象
+providers   由 Nest 注入器实例化的提供者，并且可以至少在整个模块中共享
+controllers    必须创建的一组控制器
+
+共享模块
+在Nest中，默认情况下，模块是单例，因此您可以轻松地在多个模块之间共享同一个提供者实例。
+
+全局模块
+@Global
+
+动态模块
+DynamicModule
+
+#### 中间件
+Client Side ->  Middleware -> Route Handler
+
+中间件函数的作用
+1.执行任何代码
+2.对请求和响应对象进行更改
+3.结束请求-响应周期
+4.调用堆栈中的下一个中间件函数
+5.如果当前中间件函数没有结束请求-响应周期,它必须调用next()将控制传递给下一个中间件函数,否则，请求将被挂起
+
+
+中间件不能在@Module装饰器中列出。我们必须使用模块类的configure()方法来设置它们
+包含中间件的模块必须实现NestModule接口。
+我们将LoggerMiddleware设置在ApplicationModule层上。
+
+中间件消费者
+MiddlewareConsumer是一个帮助类。它提供了几种内置方法来管理中间件。
+他们都可以被简单的链接起来。forRoutes可接受一个字符串,多个字符串,对象,一个控制器类甚至多个控制器类。
+
+configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes(CatsController);
+}
+
+函数式中间件
+consumer.apply(cors(), helmet(), logger).forRoutes(CatsController);
+
+#### 异常过滤器
+内置的异常层负责整个应用程序中所有抛出的异常。
+当捕获到未处理的异常时，最终用户将收到友好的响应。
+![./assets/异常过滤器.png](异常过滤器)
+开箱即用
+此操作由内置的全局异常过滤器执行,该过滤器处理类型HttpException的异常。
+每个发生的异常都由全局过滤器处理,当这个异常无法被识别时，返回500
+
+Nest提供了一个内置的HttpException类,它从@nestjs/common包中导入。
+对于典型的基于HTTP REST/GrapgQL API的应用程序,最佳实践是在发生某些错误情况时发送标准HTTP响应对象。
+
+自定义异常可以继承自HttpException
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+
+}
+
+所有的异常过滤器都应该实现通用的ExceptionFilter<T> 接口。
+@Catch()装饰器绑定所需的元数据到异常过滤器上。它告诉Nest这个特定的过滤器
+正在寻找HttpException而不是其他的。
+
+绑定过滤器
+我们将HttpExceptionFilter绑定到CatsController的create() 方法上
+
+#### 管道
+管道是具有@Injectable()装饰器的类。管道应实现PipeTransform接口。
+管道有两个典型的应用场景:
+转换: 管道将输入数据转换为所需的数据输出
+验证: 对输入数据进行验证, 如果验证成功继续传递;验证失败则抛出异常
+
+内置管道:
+Nest自带九个开箱即用的管道,即他们从@nestjs/common包中导出。
+
+
+#### 守卫
+守卫是一个使用@Injectable()装饰器的类。守卫应该实现CanActivate接口。
+守卫有一个单独的责任。它们根据运行时的某些条件来确定给定的请求是否由路由处理程序处理。
+这通常称为授权。在传统的Express应用程序中,通常由中间件处理授权。
+守卫可以访问ExecutionContext实例,因此确切的知道接下来要执行什么。
+
+
+#### 拦截器
+拦截器是使用@Injectable装饰器注解的类。拦截器应该实现NestInterceptor接口
+传递的拦截器是类型而不是实例，让框架承担实例化责任并启用依赖注入。
+另一种可用的方法是传递立即创建的实例:
+
+@UseInterceptors(new LogginInterceptor())
+
+
+
+
+## 3.2
+### 低代码引擎
+设计器
+功能: 入料, 编排,组件配置,画布渲染
+
+低代码引擎的编辑器将产出两份数据
+
+资产包数据assets: 包含物料名称,包名及其获取方式
+页面数据schema: 包含页面结构信息,生命周期和代码信息
+
+渲染模块: 使用资产包,页面数据和低代码运行时，并且允许维护者在低代码编辑器中用低代码的方式继续维护
+出码模块: 不依赖低代码运行时和页面数据,直接生成可直接运行的代码,并且允许维护者用源码的方式继续维护,但无法再利用低代码编辑器
+
+编辑态扩展简述
+
+物料扩展
+
+物料是页面搭建的原料，按照粒度可分为组件,区块和模板:
+组件: 组件是页面搭建最小的可复用单元,其只对外暴露配置项
+区块: 区块是一小段符合低代码协议的schema,其内部会包含一个或多个组件,用户向设计器中拖入一个区块后可以随意修改其内部内容
+模块: 模板和区块类似，也是一段符合低代码协议的 schema，不过其根节点的 componentName 需固定为 Page，它常常用于初始化一个页面；
+
+
+低代码整体流程
+
+1.拖拽生成schema
+拖拽生成正确的schema才能交给渲染引擎正确渲染出组件
+
+拖拽事件注册到整个画布上
+物料中的每一行添加拖拽开始事件即可
+
+发布订阅者模式，让每一个交互组件去观察拖拽事件，并在拖拽时被通知
+
+## 3.6
+### 进程间通信
+
+通信机制有内容需要设计
+
+协议设计
+通信频道
+连接
+服务端
+客户端
+
 
 
 
