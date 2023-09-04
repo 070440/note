@@ -407,6 +407,30 @@ OpenGL有六种坐标
 坐标变换矩阵栈
 vertexData -> (LOCAL SPACE 局部坐标) -> ModelMatrix(模型矩阵) -> (World Space 世界坐标) -> ViewMatrix -> (VIEW SPACE 相机坐标) -> ProjectionMatrix(投影矩阵) -> (Clip Space 齐次剪裁坐标) -> (同除以w) -> NDC (Normalized Device Coordinates) -> ViewportTransform(视口变换) -> Screen space => (Fragment Shader)
 
+matrix 本地矩阵 包含了PRS
+matrixWorld 是该对象本地矩阵和所有父节点的乘积
+叶节点.matrixWorld = scene.matrixWorld * .... * 叶子结点.matrix
+
+position表示本地坐标 getWorldPosition是世界坐标，是对象及其所有父节点position相加
+
+viewMatrix = camera.matrixWorldInverse
+在模型矩阵中，位于最右侧的一列元素取决
+
+matrix 本地矩阵
+旋转矩阵
+cosb -sinb 0 
+sinb cosb  0
+0    0     1
+平移矩阵
+1 0 0 Tx
+0 1 0 Ty
+0 0 1 Tz
+0 0 0 1 
+缩放矩阵
+Sx 0 0 0 
+0 Sy 0 0
+0 0 Sz 0
+0 0 0  1
 
 剪裁坐标和NDC不同，Vertex Shader的输出就是在Clip Space上，接下来 GPU会做剪裁，剔除在Clip Space范围之外的定点，然后GPU再做透视除法将定点转到NDC
 
@@ -3037,7 +3061,7 @@ decorators（target， key)
 decorators(target, key, index)
 
 方法装饰器
-decorators（target, key, descriptor)
+decorators（target, key, descriptor）
 
 ### swagger
 写接口的时候自动帮你生成接口文档
@@ -3291,19 +3315,26 @@ Nest自带九个开箱即用的管道,即他们从@nestjs/common包中导出。
 
 发布订阅者模式，让每一个交互组件去观察拖拽事件，并在拖拽时被通知
 
-## 3.6
-### 进程间通信
 
-通信机制有内容需要设计
+## 8.31
+### Node fs模块相关函数
+1. path.resolve()
+../ 退回上一步
+/ 从这里开始拼接
+其余情况正常拼接
 
-协议设计
-通信频道
-连接
-服务端
-客户端
+path.join()
+使用__dirname 必须放在最左侧，join拼接不会管顺序
 
+2. process.cmd()
+当前工作目录
 
+3. fs.readdirSync( path, options )
+返回目录下的文件名数组 字符串
 
+### VueCompiler插件
 
+codemirror 显示代码
+Vuecompiler 编写代码框的模版和样式
 
 
