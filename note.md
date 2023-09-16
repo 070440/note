@@ -3337,4 +3337,2812 @@ path.join()
 codemirror 显示代码
 Vuecompiler 编写代码框的模版和样式
 
+## 2023.1.23
+### 地形，大气和云
+地形
+HeightField
+LOD
+level of detail
+Adaptive Mesh Tessellation
+
+## 2023.1.15
+### IOC
+Spring提供了一个容器，称为IoC容器，用来充当IoC思想的外部。
+IoC容器负责对象的搭建，初始化一系列工作，被创建或者被管理的对象在IoC容器中统称为Bean。
+目标：充分解耦
+使用IoC容器管理Bean（IoC）。
+在IoC管理容器内将有依赖关系的Bean进行关系绑定（DI）。
+最终效果：使用对象时不仅可以直接从IoC容器中获取，并且获取到的bean 已经绑定了所有的依赖关系。
+
+### 装饰器
+类装饰器
+属性装饰器
+方法装饰器
+参数装饰器
+访问器装饰器
+
+## 2023.1.1
+### Node的事件循环
+Node事件循环的顺序
+外部输入数据 -> poll -> check -> close callback -> timer -> I/O callbacks -> idle -> poll
+
+poll
+1.回到timer阶段执行回调
+2.执行I/O回调
+并且在进入该阶段时如果没有设订timer
+
+## 12.3
+### 渲染实践
+投影 -> 光栅化 -> 着色
+
+SIMD 和 SIMT
+(single instruction multiple Data)
+(single instruction multiple Threads)
+
+GPU架构
+![./GPU.PNG]
+
+submesh 
+展示同一个模型中的不同子mesh
+resourcepool
+shader pool
+texture pool
+mesh pool
+
+GPU Batch rendering
+visiblity culling
+
+BVH culling
+
+PVS (Potential visibility set)
+二叉空间分割
+BSP (Binary Space Partitioning)
+门,窗作为分割节点
+
+纹理压缩
+block compress
+
+modeling
+3D Max MAYA Blender
+sculpting
+polymodeling
+scanning
+Procedural Modeling
+Houdini
+Unreal
+
+Cluster-Based Mesh Pipeline
+
+## 11.25
+### gameplay
+动态物体 (dynamic)
+静态物体 (static)
+环境 (Environment) 
+Environment 分为 sky, vegetable, terrian
+
+Object 分为 Property 和 behavior
+
+组件组成Object 位移，模型，动画,物理
+
+Game Object 每个tick运行各种系统
+parallelized processing
+
+场景管理: 四叉树 八叉树 BVH()
+
+### 引擎时序性
+pretick
+posttick
+保证输入一定的时候，游戏的行为一致
+## 11.24
+### qiankun实现原理
+手写qiankun的registerMicroApps()和start()方法
+registerMicroApps是用来根据传入的子应用的信息数组来注册子应用
+start启动这些子应用
+微前端的运行原理:
+1.监听路由变化
+2.匹配子应用
+3.加载子应用
+4.渲染子应用
+
+## 11.20
+### 游戏引擎架构
+rendering 
+physics 
+gameplay 
+music 
+online-gameing
+Motion Matching
+Procedual Content Generation (PCG)
+Data-Oriented Programming(DOP)
+Job System
+Lumen
+Nanite
+
+引擎分层架构
+工具层 ( 各种editor 各种设计工具)
+功能层 (Drive the ticks tick包含logic input camera motor charactar controller 
+animation physics render network I/O memory GC )
+资源层 (GUID 全局唯一编号)
+核心层 ( 内存管理,数学库 )
+平台层 ( Graphics API )
+
+## 2022.10.23
+webpack分包
+1.ESModule分多入口打包 + 魔法注释
+2.DLLPLugin和DllReferencePlugin
+分离依赖包
+生成manifest.json映射文件
+## 2022.10.19
+### Tree Shaking
+优化配置项
+optimization: {
+    //模块只导出被使用的成员
+    usedExports: true，
+    //压缩打包结果 
+    minimize: true,
+    //合并模块
+    concatenateModules: true
+
+}
+Tree-Shaking实现的前提是ES Modules
+## 2022.10.3
+### webpack
+webpack.config.js 采用COMMONJS规范
+bundle.js是一个立即执行函数
+函数接收一个参数modules,接收所有的模块，调用函数时传入数组，每个函数对应一个模块
+webpack工作入口函数 installedModules缓存加载过的模块
+加载源代码中的入口模块和挂载工具函数
+最后调用模块入口函数，传入的ID为0
+每个模块打包之后都变成一个函数，形成自己的私有作用域
+
+css-loader只会把CSS模块加载到JS代码中,而不会使用这个模块
+
+clean-webpack-plugin插件,该插件模块到处CleanWebpackPlugin
+
+### webpack 打包过程
+webpack CLI 启动打包流程
+载入Webpack核心模块,创建Compiler对象
+使用Compiler对象开始编译整个项目
+从入口文件开始,解析模块依赖,形成依赖关系树
+递归依赖树,将每个模块交给对应的Loader处理
+合并Loader处理完的结果,将打包结果输出到dist目录
+
+make阶段
+SingleEntryPlugin中调用了Compilation对象的addEntry方法,开始解析入口
+addEntry方法中又调用了_addModuleChain方法,将入口模块添加到模块依赖列表中
+紧接着通过Compilation对象的buildModule方法进行模块构建
+buildModule方法中执行具体的Loader,处理特殊资源加载
+build完成过后,通过acorn库生成模块代码的AST语法树
+根据语法树分析这个模块是否还有依赖的模块,如果有则继续循环build每个依赖
+所有依赖解析完成，build阶段结束
+最后合并生成需要输出的bundle.js写入dist目录
+## 7.19
+### electron的模块
+
+模块主要分为主进程中能用的模块，渲染进程中可用的模块，主进程和渲染进程中都可以用的模块。
+
+
+## 7.3
+### PM2
+PM2是一个内建了负载均衡器的node进程管理工具，可以利用它来简化很多node应用管理的繁琐任务,如性能监控，自动重启，负载均衡，而且使用非常简单
+
+### electron
+过程模型
+主进程
+每个electron应用都有一个主进程,作为应用程序的入口点。主进程在Node.js环境中运行，这意味着它能够require模块化和使用所有Node.js API。
+窗口
+主进程的主要目的是使用BrowserWindow模块创建和管理应用程序窗口，该窗口在单独的渲染器进程中加载网页。
+当一个BrowserWindow实例被销毁时，其相应的渲染器进程也会终止。
+应用
+主进程还通过electron的app模块控制应用程序的生命周期。该模块提供了大量事件和方法
+渲染进程
+与主进程不同的是，它可以有多个，每个都是在一个单独的进程中运行的。它们也可以被掩盖。
+electron的整体流程
+主进程通过创建BroswerWindow实例来创建网页。每一个BrowserWindow实例被摧毁时，对应的渲染过程也被终止。
+渲染进程只能管理每个相应的页面，在一个渲染过程中崩溃不会影响其他渲染进程。
+渲染进程通过IPC与主进程通信在网页上执行GUI操作。
+
+进程间通信
+ipcMain, ipcRenderer
+
+
+
+## 2022.6.30
+### AST与babel插件开发
+所谓抽象语法树就是通过JavaScript Parser
+进行babel插件开发的时候时,通常我们会借助babel的一些库去进行代码的parser以及transform ast,generator code
+
+常用库
+@babel/core  babel核心库
+@babel/parser babel解析器
+@babel/types 手动构建AST和检查AST节点类型的方法
+@babel/traverse 对AST进行遍历，维护了整棵树的状态
+@babel/generator 这个模块用于代码的生成，通过AST生成新的代码返回
+
+babel工作流程
+Parse -> Transform -> Generator 
+Parse js代码进行词法分析生成一系列tokens,之后再进行语法分析将tokens组合成一颗AST抽象语法树
+Transform 遍历旧的AST进行增删改查,将新的JS节点转化成浏览器兼容的语法节点
+Generator 将新的AST转化成新的代码
+
+
+## 2022.6.27
+### Composition API
+setup
+setup作为组件中compositionAPI的起点
+从生命周期角度来看,setup会在beforeCreate钩子函数之前执行
+在template模板中需要使用的数据和函数，需要在setup中返回
+reactive(复杂类型 对象)
+setup中默认普通的数据不是响应式，需要用reactive函数
+ref函数(除对象以外的类型)
+对于简单数据类型包裹一层对象，转换成响应式
+在setup函数中，通过value属性，才可以访问到ref对象的值
+在模板中，ref可以直接使用，不需要额外的.value
+toRef函数
+使用 toRef函数，将 reactive 函数的响应式对象中的指定属性转换为响应式数据
+toRefs函数
+toRefs
+对一个响应式对象的所有内部属性都做响应式处理，保证展开或者解构出的数据也是响应式
+对一个响应数据，进行结构或者展开，会丢失他的响应式特性
+计算属性computed函数
+computed函数调用时，要接收一个处理函数，处理函数中，需要返回计算属性的值
+传入的实参是一个函数
+
+### tree-shaking
+tree-shaking更关注于无用模块的消除，消除那些引用了但没有被使用的模块
+tree-shaking的消除原理是依赖于ES6模块的特性
+ES6 module特点
+只能作为模块顶层的语句出现
+import的模块名只能是字符串常量
+模块之间的依赖关系是静态的
+函数消除和类消除
+无用的函数可以进行消除，而类不能进行消除
+设置sideEffects: false或者是设置成一个数组[],告诉webpack在遇到这些模块的时候进行副作用分析评估
+
+tree-shaking的配置
+1.ES6 模块化
+2.编译器没有将ES2015模块语法转换成CommonJS的语法
+3.在项目的package.json文件中，添加"sideEffects"属性
+4.mode设置为production,压缩代码和tree-shaking
+
+### babel-loader
+Babel是一个JavaScript编译器，能够让我们放心的使用新一代JS语法
+babel-loader 在webpack里应用babel解析ES6的桥梁
+@babel/core babel核心模块
+@babel/preset-env babel预设，内置一组babel插件的集合
+
+babel只转换ES6语法，不会转换新的API（Set, Map, Promise）,新的API需要用到@babel/polyfill 和 @babel/plugin-transform-runtime
+
+babel-polyfill的useBuiltIns,默认为false
+另外的两个取值变成了entry和usage，取这两个值的时候我们需要额外指定core-js这个参数。默认使用core-js2.0,它会实现一系列内置方法和新增API(Promise)
+
+usage
+entry是全量引入polyfill,usage可以实现按需添加，使用usage时,我们不需要额外在项目入口中引入polyfill了，它会根据我们项目中使用到的进行按需引入(但每个js文件都会引入造成重复)
+
+```
+{
+    "presets": [
+        ["@babel/preset-env", {
+            "useBuiltIns": "usage",
+            "core-js": 3
+        }]
+    ]
+}
+```
+
+@babel/plugin-transform-runtime
+该插件会智能化的分析我们的项目中所使用到需要转译的js代码，从而实现模块化从babel-runtime中引入所需的polyfill实现。
+
+
+## 2022.3.26
+### await 
+去执行await的函数,把await后面的语句放入到微队列中,当一步操作完成之后,
+再返回来执行await后面的语句
+
+## 2022.3.22
+### 隐式类型转换规则
+
+## 2022.3.7
+### addEventListener的第三个参数表示是否捕获阶段触发
+
+### 自定义事件
+1. Event() 构造函数，创建一个新的事件对象
+````
+var ev = new Event("look", {"bubbles": true, "cancelable": false});
+
+document.dispatchEvent("look");
+elem.dispatchEvent(ev);
+````
+
+2. CustomEvent() 创建一个自定义对象
+```
+obj.addEventListener("cat", function(e) {
+    process(e.detail)
+})
+
+var event = new CustomEvent
+```
+
+3. document.createEvent() 
+
+
+### DllPlugin
+
+一个dll包,就是一个单纯的依赖库,它本身不能运行,是用来给你的app引用的
+
+打包dll的时候,Webpack会将所有的包做一个索引，写在一个manifest文件中,就可以了
+
+Dll打包的好处,要依赖没有变化，线上的dll代码就不需要随着版本发布频繁更新
+只需要编译app部分的代码
+
+### Happypack
+
+Happypack的作用就是将文件解析任务分解成多个子进程并发执行。
+子进程处理完任务后再将结果发送给主进程。
+所以可以大大提升Webpack的项目构建速度。
+
+将常用loader替换成happypack/loader
+
+首先需要创建HappyPack插件
+单个loader的使用实例
+```
+new HappyPack({
+    id: 'babel',
+    loaders: ['babel-loader?cacheDirectory']
+})
+
+rules: [
+    use: ['happypack/loader?id=babel']
+]
+```
+使用多个loader时
+
+new HappyPack({
+    id: 'styles',
+    loaders: ['style-loader', 'css-loader', 'less-loader']
+})
+threads: 开启的进程数
+threadPool: 共享进程池,即多个HappyPack
+实例都是用同一个共享进程池中的子进程去处理任务
+
+use: [
+    'cache-loader', 'babel-loader'
+]
+
+HardSourceWebpackPlugin({
+    //在高速缓存中写入,设置缓存在磁盘中存放的路径
+    cacheDirectory: './../.cache/hard-source/[confighash]',
+})
+
+ModuleConcatenationPlugin()
+
+### Scope Hoisting
+Scope Hoisting它可以让webpack打包出来的代码更小,运行更快,它可以被称作为"作用域提升"。
+
+new webpack.optimize.Module
+
+## 2022.3.6
+### webpack-dev-server 的 proxy用法
+1. 请求代理
+proxy: {
+    '/api': 'http://localhost:3000'
+}
+2. 多个路径代理到同一个target下，
+proxy: [{
+  context: ['/auth', '/api'],
+  target: 'http://localhost:3000'
+}]
+3. 重写路径
+pathRewrite: {'^/api' : ''}
+4. 是否在https上运行
+secure: false
+
+## 2022.3.5
+### canvas图片跨域问题
+1. 使用base64
+2. 设置image的crossorigin属性
+### JS中创建事件的方法
+let myEvent = new Event('event_name');
+但是为了能够传递数据,就选哟使用CustomEvent构造器
+let myEvent = new CustomEvent('event_name', {
+    detail: {
+
+    },
+})
+事件监听
+window.addEventListener('event_name', function(event) {
+    console.log('得到数据为: ', event.detail)
+})
+事件的触发
+if(window.dispatchEvent) 
+window.dispatchEvent(myEvent)
+else
+window.fireEvent(myEvent)
+## 2022.3.4
+### debounce在vue中的坑
+debounce放在methods中
+组件生成实例的时候，调用methods中的方法，最后调用this.$options.methods.resize(),在vue内部,组件实例化的时候其实就干了下面这个事 
+```
+this.resize = this.options.methods.resize.bind(this)
+```
+resize应该是相互独立的
+则可以在created中声明
+
+## 2022.3.2
+### 箭头函数不能做构造函数的原因
+因为箭头函数没有自己的prototype原型对象，
+而在使用new 的时候, 需要创建一个空对象，并将空对象的__proto__指向构造函数的prototype 
+所以不能做构造函数
+
+## 2022.2.27
+### async与await
+async返回一个promise对象,如果在函数中return一个直接量,
+async会把这个直接量通过promise.resolve()封装成promise对象
+await 等待的不是一个 Promise Like 对象的时候，相当于 await Promise.resolve(...)。
+
+## 2022.2.7
+### http中的keep-alive
+http是用完就会关闭，通常一个网页可能会有很多组成部分，我们希望在短时间内得到复用，这就是HTTP协议中的keep-alive属性
+HTTP1.0默认是关闭的，需要在http头中加入"Connection: Keep-Alive",才能启用Keep-Alive。
+HTTP1.1默认启用Keep-Alive,如果加入"Connection: close",才关闭
+
+### TCP协议中的keep-alive
+TCP的连接在于保活,心跳。
+对于一方的keep-alive探针,另一方必须响应
+对方回应了ACK，说明一切OK
+对方回应RST,连接已经不存在
+没有回复,说明socket已经被关闭
+
+
+## 2022.2.6
+### CSRF
+验证 HTTP Referer 字段；
+在请求地址中添加 token 并验证；
+在 HTTP 头中自定义属性并验证。
+
+
+
+## 2022.2.5
+### vuex与eventbus的区别
+vuex 和传统的 event-bus 的不同点除了 vuex 实现了更加友好的响应式状态之外，还禁止了 vuex 里面数据的直接修改，大大增强了信任度（有点像promise的status），通过增加 mutations 和 actions 这种“中间层”，它能更好的控制中间的变化，比如实现时间旅行、状态回退和状态保存的功能。
+
+另外，需要说明的是，mutation 和 action 的不同点不仅在于 mutation 里面只能写同步代码，action 里面只能写异步代码，还在于 mutation 里面的方法的第一个参数是state（因为只需要修改 state 就可以了），而 action 里面的方法的第一个参数是store（因为还需要调用 commit 方法）
+
+### 事件委托的优势
+①document对象很快就可以访问，而且可以在页面生命周期的任何时间点上为他添加事件处理程序。
+②在页面设置事件处理程序所需时间更少。只添加一个事件处理程序所需的DOM引用更少，所花的时间也更少。
+③整个页面占用的内存空间更少，能够提升整体性能。
+最适合采用事件委托技术的事件包括click、mousedown、mouseup、keydown、keyup和keypress。
+
+### cookie的samesite属性
+可以设置三个值Strict,Lax,None
+
+## 2022.2.3
+### IntersectionObserver API
+无限滚动
+```
+const io = new IntersectionObserver((entries) => {
+    if(entires[0].intersectionRatio > 0.001) {
+        if(entries[0].target.dataset.site === 'end) {
+            this.showStart += 10;
+        } else {
+            this.showStart = (this.showStart - 10 <= 1) ? 1 : (this.showStart - 10);
+        }
+    }
+})
+```
+惰性加载
+```
+function query(selector) {
+    return Array.from(document.querySelectorAll(selector));
+}
+
+var observer = new IntersectionObserver(
+    function(changes) {
+        changes.forEach(function(change) {
+            let container = change.target;
+            let content = container.querySelector('template').content;
+            container.appendChild(content);
+            observer.unobserve(container);
+        })
+    }
+);
+
+query('.lazy-loaded').forEach(function(item) {
+    observer.observe(item);
+})
+
+
+```
+## 2022.1.22
+### 浅拷贝与深拷贝
+浅拷贝 
+1.Object.assign
+2.Array.prototype.slice
+数组中基础类型是深拷贝,而引用类型是剪开被
+3.Array.prototype.concat
+深拷贝
+4. 扩展运算符
+和Array.prototype.slice类似
+深拷贝
+JSON.parse(JSON.stringify())
+
+## 2022.1.3
+### vue-cli
+vue-cli的组件
+1. CLI(@vue/cli)是一个全局安装的npm包
+2. CLI服务(@vue/cli-service)是一个开发环境依赖
+CLI服务是构建于webpack和webpack-dev-server之上的。
+### webpack
+1. output
+```
+ouput: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'name.bundle.js'
+}
+```
+多入口文件
+```
+output: {
+    filename: '[name].js',
+    path: __dirname + '/dist',
+}
+```
+path: 用来存放打包后文件的输出目录
+publicPath: 指定资源文件引用的目录(相对于服务器根目录的位置)
+如果你在用style-loader或者css sourceMap,你就需要设置publicPath为服务器的绝对路径
+
+devServer: 启动devServer时,资源还是会打包,但它打包资源之后,资源不会放在本地目录里面，而是放在内存里面,所以我们的devSever是回到内存中查找我们打包好的内容，它还会到本地目录中查找内容,devServer中有一个contentBase属性可以控制它取哪里访问本地目录的资源，devServer中的publicPath的值是服务器打包资源后的输出路径
+
+可以通过配置outpupt选项,告知webpack如何向硬盘写入编译文件.注意,即使可以存在多个entry起点,但只能指定一个output配置.
+
+output提供的是占位符，name指的是entry定义的chunk的名字,即entry下的属性名,hash则指的是打包这一次的hash值,chunkhash指的是当前文件的hash值
+```
+output: {
+    filename: '[name].js',
+    path: __dirname + '/dist',
+}
+```
+
+
+
+2. loader
+```
+module: {
+    rules: [{ test: /\.txt$/, use: 'raw-loader'}],
+}
+```
+在webpack中配置rules,必须定义在module中
+loader还可以在import中显式指定loader
+```
+import Styles from 'style-loader!css-loader?modules!./style.css';
+```
+使用！前缀,将禁用loader
+使用！！前缀,将禁用所有的已配置的loader,
+使用-！前缀，将禁用所有已配置的preLoader和loader,但是不经用postLoaders
+
+自定义loader
+测试自定义loader
+```
+resolveLoader: {
+    modules: ['node_module', path.resolve(__dirname, 'loaders')],
+}
+```
+
+3. plugin可以打包优化，资源管理，注入环境变量
+```
+plugins: [
+    new HtmlWebpackPlugin({template: './src/index.html'})
+]
+```
+plugin详解
+webpack插件是一个具有apply方法的JavaScript对象。apply方法会被webpack compiler调用,并且在整个编译生命周期都可以访问compiler对象
+```
+class ConsoleLogOnBuildWebpackPlugin {
+  apply(compiler) {
+    compiler.hooks.run.tap(pluginName, (compilation) => {
+      console.log('webpack 构建正在启动！');
+    });
+  }
+}
+```
+4. entry
+配置可以单个字符串，数组，对象
+描述入口的对象
+dependOn: 当前入口所依赖的入口。它们必须在该入口被加载前被加载。
+import: 启动时需加载的模块
+runtime: 运行时chunk的名字。如果设置了，就会创建一个新的运行时chunk。
+runtime和dependOn不应在同一入口上同时使用
+runtime不能指向已存在的入口名称
+dependOn不能循环引用
+
+常见场景
+```
+entry: {
+    main: './src/app.js',
+    vendor: './src/vendor.js',
+},
+```
+在vendor.js中存入未做修改的必要library或文件,然后将它们导报在一起成为单独的chunk。内容哈希保持不变,浏览器可以独立的缓存它们，从而减少了加载时间。
+在webpack4之后，使用optimazation.splitChunks选项，将vendor和app模块分开,并为其创建一个单独的文件。
+
+optimization.splitChunks
+默认使用webapck v4+ 提供的全新的通用分块策略
+splitchunksPlugin的配置选项
+
+splitChunks.automaticNameDelimiter
+chunk名称中间的分割符
+
+splitChunks.chunks
+取值可以是all, async, initial,
+设置为all,意味着chunk可以在异步chunk和非异步chunk之间共享,也可以是一个函数去控制
+
+splitChunks.maxAsyncRequests
+按需加载时的最大并行请求数
+
+splitChunks.maxInitialRequests
+入口点的最大并行请求数
+
+splitChunks.minChunks
+拆分前必须共享模块的最小chunks数
+
+splitChunks.hidePathInfo
+为由maxSize分割的部分创建名称时,阻止公开路径信息
+
+splitChunks.minSize
+生成chunk的最小体积
+
+
+## 2021.12.26
+### 前端工程化
+#### 通用脚手架和专用脚手架
+Yeoman
+yo -> generator-webapp,generator-venv 
+使用yeoman自定义脚手架工具
+构建自己的脚手架工具
+继承yeoman-generator重写class
+使用模板和命令行交互
+EJS模板语法
+<%= title %>
+generator 挂载载全局中 npm link
+
+每一个Generator都是基于nodeJs开发的npm模块,可以发布供其他人使用
+yeoman主要有有三个部分组成: yo(脚手架), grunt/gulp(构建工具), bower(包管理器)
+
+### Babel原理
+大多数estree Parser遵循estree规范,babel主要分为解析,转换,生成三个过程
+1. 解析
+将代码转换成AST
+词法分析: 将代码分割为token流,即语法单元生成的数组
+语法分析: 分析token流并生成AST
+2. 转换
+访问AST的节点进行变换操作产生新的AST,
+3. 生成
+以新的AST为基础生成代码
+
+### 错误监控
+1. 资源加载错误,通过addEventListener('error', callback, true)在捕获阶段捕获资源加载失败错误
+2. js执行错误,通过window.onerror捕获js错误
+3. promise错误,通过addEventListener('unhandledrejection', callback)捕获promise错误,手动抛出相关错误信息
+
+
+### 前端安全防护之安全沙箱
+安全沙箱属于浏览器层面的安全架构,有了安全沙箱的存在,可以尽可能的降低攻击带来的伤害程度
+安全沙箱
+安全沙箱不是浏览器独有的,它是指利用操作系统提供的技术,对外建立的一道屏蔽的墙,墙内屏蔽系统权限只做具体处理,并通过IPC传递消息。
+浏览器的安全沙箱内存放的是渲染线程,实际所有的涉及I/O操作,文件读取,资源请求,用户请求等操作都是先通过主线程通知
+## 2021.12.12
+### webpack
+1. 读取webpack的配置参数
+2. 启动webpack,创建Compiler对象并开始解析项目
+3. 从入口文件开始解析,并且找到其导入的依赖模块,递归遍历分析,形成依赖关系树
+4. 对不同文件类型的依赖模块文件使用对应的Loader进行编译,最终转为Javascript文件
+5. 整个过程中webpack会通过发布订阅模式,向外抛出一些hooks,而webpack的插件即可通过监听这些关键的事件节点，执行插件任务进而达到干预输出结果的目的。
+
+文件的解析与构建是一个比较复杂的过程,在webpack源码中主要依赖于compiler和compilation两个核心对象实现
+
+compiler对象是一个全局单例,他负责把控整个webpack打包的构建流程。compilation对象是每一次构建的上下文对象。
+每个模块的依赖,则依赖于AST语法树.每个模块文件在通过Loader解析完成之后,会通过acorn库生成模块代码的AST语法树,通过语法树就可以分析这个模块是否还有其它依赖的模块,进而继续执行循环下一模块的编译解析.
+
+最终webpack打包出来的bundle文件是一个IIFE的执行函数
+
+#### 编写loader的思路
+同步loader
+我们可以通过return和this.callback返回输出的内容
+如果需要返回的内容比较多,我们则可以借助webpack提供的api this.callback
+异步loader
+使用this.async来获取callback函数
+
+loader的开发技巧
+尽量保证一个loader去做一件事情,用不同的loader组合不同的场景需求
+loader必须作为一个纯函数,不能保留状态
+合理使用缓存,合理的缓存能够降低重复编译带来的成本.
+
+#### babel-loader的源码
+runLoaders -> iteratePitchingLoaders
+
+
+## 2021.11.27
+### img标签
+img标签是行内元素，属于置换元素，具有内置的宽高属性
+
+可替换元素和不可替换元素
+HTML的大多数元素都是不可替换元素，即其内容直接表现给用户端
+可替换元素则是根据元素的标签和属性来决定元素的具体内容
+例如浏览器会根据<img>标签的src属性的值来读取图片信息并显示出来，而如果查看HTML代码，则看不到图片的实际内容，又例如<input>标签的type属性来决定是显示输入框，还是单选按钮。
+<img>,<input>,<textarea>,<select>,<object>都是替换元素，这些元素往往没有实际的内容，即是一个空元素
+可替换元素的性质等同于设置了display:inline-block的元素一致
+
+### 右侧自适应
+1. float: left + width: 100%;
+2. display: flex + flex: 1,
+3. calc(100vw - 200px)
+4. 使用负margin() margin-left: -100% + margin-left: 200px float: left;
+
+## 2021.11.10
+### Geolocation组件
+Geolocation提供基本的定位信息和经纬度信息，而更复杂的地图展示则需要使用MapView组件。使用Geolcation定位需要在应用中申请相关权限，对于iOS,需要在Info.plist中增加NSLocationWhenInUseUsageDescription来开启定位权限，对于Android,则需要在AndroidManifest.xml配置文件中增加定位权限ACCESS_FINE_LOCATION
+
+### NetInfo组件
+判断网络状态
+NetInfo.fetch().done((status) => {console.log(status)});
+判断网络是否连接
+NetInfo.isConnected.fetch().done()
+监听网络状态的变化
+NetInfo.addEventListener('change', handler)
+### ReactNative中的组件生命周期
+挂载->更新->移除
+挂载: 
+getIntialState() -> componentWillMount() -> componentDidMount()
+更新:
+componentWillReceiveProps() -> shouldComponentUpdate() -> componentWillUpdate() -> componentDidUpdate()
+移除:
+componentWillUnmount() -> getDOMNode() -> forceUpdate()
+
+### 第三方库
+react-navigation
+StackNavigator(RouteConfigs, StackNavigatorConfig)
+react-native-tab-navigator
+底部导航栏
+react-native-scrollable-tab-view
+选择照片或者是图片
+react-native-image-picker
+
+
+
+## 2021.11.9
+### Touchable系列组件
+TouchableWithoutFeedback
+TouchableHighlight
+TouchableNativeFeedback
+只支持仅有的view节点作为子节点，创建一个新的RCTView节点替换当前的子View,并附带一些额外的属性
+TouchableOpacity
+
+### ReactNative常用API
+AppRegistry
+AppRegistry.regeisterComponent进行系统注册，原生系统通过加载运行bundle文件包，系统经过内部解析，最后调用AppRegistry.runApplication来运行React Native程序。当页面销毁的时候，通过调用AppRegistry.unmountApplicationComponentAtRootTag。需要注意的是,unmountApplicationComponentAtRootTag的参数和runAPPlication的参数保持一致。
+
+StyleSheet
+StyleSheet.create()创建样式表
+
+AppState
+APPState.currentState来获取应用的状态。应用的状态主要分为3种:
+active: 前台运行中,
+background: 后台运行中,
+inactive: 运行的过渡状态
+
+AsyncStorage
+轻量数据存储方案，用来替代localStorage
+
+PixelRatio
+get方法获取设备的屏幕像素
+
+Animated
+Animated.timing() //创建旋转动画
+Animated.spring() //创建缩放动画
+Animated.parallel() //创建一组动画
+## 2021.11.8
+### 平台特定组件
+TabBarIOS和TabBarIOS.item
+ToolbarAndroid
+SegmentedControlIOS组件(IOS平台用于分段的组件)
+ViewPagerAndroid组件
+页面滑动的状态 idle->dragging->settling
+
+## 2021.11.7
+### ReactNative原生组件
+ScrollView
+应用于广告轮播图
+### 结构化组件
+View
+支持Flexbox布局
+
+Navigator
+系统为开发者提供了两个组件来实现页面导航: Navigator和NavigatorIOS
+Navigator可以实现在iOS和Android同时实现，而NavigatorIOS则是包装了UIKit库的导航功能，方便用户左划屏幕来返回上一界面。
+实现路由状态压入和弹出操作。在使用路由之前，要实现页面之间的跳转，需要在renderScene方法里面设置需要的场景，并对路由进行其他配置。
+使用导航器，首先需要初始化一个路由，initialRoute
+配置跳转动画configureScene
+Navigator参数传递
+
+ListView
+用于高效的展示一个可以垂直滚动的数据列表
+
+WebView
+可以加载网址，本地html文件都是可以的
+
+## 2021.11.5
+### 原生组件
+Text组件
+Image组件
+本地图片
+```
+<Image style={styles.img} source={require('./image/xxx.png')}>
+```
+网络图片
+```
+var url = 'http://abc.com'
+<Image style={styles.imageStyle} source={{uri:url}}/>
+```
+#### resizeMode(图片的几种伸缩方式)
+cover 
+contain
+stretch
+
+TextInput组件
+
+## 2021.11.4
+### React Native项目结构解析
+
+__tests__ 测试文件夹
+android Android文件所在的目录，包含Android Studio 项目环境文件
+iOS iOS文件所在的目录，里面包含XCode项目环境文件
+node_modules 
+watchmanconfig Watchman的配置文件，Watchman用于监控文件变化
+flowconfig flow的配置，flow用于代码静态检查
+buckconfig buck的配置, buck是Facebook开源的高效编译系统
+index.android.js Android程序入口文件
+index.ios.js iOS应用入口文件
+package.json 项目基本信息以及依赖信息
+
+#### iOS文件结构以及代码分析
+build 项目的编译文件
+shop iOS对应项目所在的位置
+shop-tvOS tvOS对应的项目文件
+xcodeproj iOS项目工程启动文件
+
+#### Android文件结构
+与原生应用的项目结构类似
+
+app/build
+app/build.gradle
+app/app.iml
+app/proguard-rules.pro 
+build.gradle 项目的gradle编译文件
+settings.gradle 项目中的配置文件
+gradlew 脚本文件
+local.properties 本地配置信息
+External Libraries 项目依赖的Lib,编译时自动下载
+
+### React Native开发基础
+#### 触摸事件
+React Native提供的组件中除了Text,其他组件是默认不支持点击事件的，也不能响应基本触摸事件，所以React Native提供了几个可以直接处理响应事件的组件
+1. TouchableHighlight
+2. TouchableNativeFeedback
+3. TouchableOpacity
+4. TouchableWithoutFeedback
+
+#### 手势系统响应
+GestureResponder 和 PanResponder
+其中GestureResponder是底层的一个借口，而PanResponder是内置的手势识别库
+一个视图想要变成响应器，需要实现以下的几个方法
+View.props.onStartShouldSetResponder
+View.props.onMoveShouldSetResponder
+View.props.onResponderGrant
+View.props.onResponderReject
+
+##### 手势系统的工作流程
+触摸事件(开始)  -> 等待移动事件 -> 其他组件申请处理触摸事件 -> Grant/reject
+一个完整的触摸事件分为 Start -> move -> release
+
+视图返回true,视图申请响应触摸事件成功将进入相应的生命周期函数
+
+View.props.onResponderMove 用户正在移动手指
+View.props.onResponderRelease 在触摸结束被调用
+View.props.onResponderTerminationRequest 其他元素想成为响应器，是否释放应答
+View.props.onResponderTerminate 响应器已经被回收
+
+PanResponder用来处理更加复杂的触摸操作，即多点触摸，具体的API比较多就不记录了
+
+## 2021.11.3
+### 创建native应用
+react-native init ProjectName
+react-native run-android
+
+## 2021.10.25
+### 测试工具Jest与Enzyme
+#### jest
+1.能在虚拟DOM中进行测试
+2.支持JSX语法
+在.test.js中编写测试用例，
+快照测试可以将前后的快照结果进行对比来判断UI是否被修改
+常用的jest断言
+1. expect().not.toBe()
+2. expect().toEqual() //递归的检查对象的所有属性和属性值是否相等
+3. expect().toHaveLength(3); //用来检测字符串或数组的长度是否符合预期
+4. expect().toThorw() //是否抛出异常
+5. expect().toMatch()
+
+#### Enzyme
+3种渲染方式
+1. shallow
+浅渲染是官方对shallow rendering的封装,仅渲染出虚拟节点。它不会返回返回真实的节点,能极大提高测试性能。而且它只渲染第一层，不会渲染所有子组件，因此速度快。它不适合测试包含子组件及需要测试生命周期的组件。shallow只渲染本组件内容，引用的外部组件不渲染。
+2. mount
+用于将React组件加载为真实的DOM节点。然而真实DOM需要浏览器环境(jsdom),它会渲染所有组件
+3. render
+用于将React组件渲染成静态的HTML字符串，然后分析这段HTML代码的结构，返回一个JS对象。
+
+Enzyme的部分API
+.get(index) 返回指定位置的子组件的DOM节点
+.at(index) 返回指定位置的子组件
+.first() 返回第一个子组件
+.last() 返回最后一个子组件
+.type() 返回当前组件的类型
+.text() 返回当前组件的文本内容
+.html() 返回当前组件的HTML形式
+.props() 返回根组件的所有属性
+.prop(key) 返回根组件的指定属性
+.state(key) 返回根组件的状态
+
+
+## 2021.10.23
+### 自动化测试
+#### 单元测试
+单元测试就是通过最小可测试单元为单元通过测试工具来确认其是否能使用
+前端单元测试与其他测试不同的是无法避免兼容性的问题
+## 10.22
+### React服务端渲染
+服务端渲染的优势
+1. 利于SEO
+2. 首屏渲染速度更快
+3. 更易于维护，服务端和客户端代码共享
+服务端渲染的API
+1. renderToString(react element)
+将React组件转化为HTML字符串，生成HTML的DOM渲染时带data-reatid属性
+2. renderToStaticMarkUp(react element)
+与上面的API作用相似，但是生成的HTML没有data-reatid属性，适合渲染静态文本
+在这个流程中，为了保证DOM结构的一致性，React通过data-react-checksum来做检测。除了在服务端产生干瘪的字符串之外，还会额外产生一个data-react-checksum值，客户端再对这个值进行校验，如果与服务端一致,客户端会进行事件绑定，否则，react会丢弃服务端返回的DOM再去重新渲染
+React16.x版本中使用hydrate()
+
+## 2021.10.21
+### React性能及性能优化
+#### setState执行的时机
+在React中，任何时刻调用组件的setState方法，React不是立即对其更新，而是将其标记为Dirty状态，setState()之后变更的状态不会立即生效，React使用了事件轮询对变更做批量处理绘制。当事件轮询结束后，React会将标有Dirty的组件及其子节点进行重绘。所有后代节点的render方法都会被调用，即使这些后代节点没有任何变化。
+对后代节点渲染的优化
+重写shouldComponentUpdate()生命周期。它于组件重新渲染前触发，如果返回值是false，当前组件将不会渲染
+#### diff算法
+正常的两棵树的对比时间复杂度O(n3),时间复杂度太高，对此React采用了三种策略
+DOM跨层级操作特别少，所以可以忽略
+拥有相同类的两个组件会生成相似树型结构，拥有不同类的两个组件将会产生不同树型结构
+同一层级一组子节点通过唯一id区分
+1.Tree Diff
+2.Component Diff
+3.Element Diff
+#### PureRender
+PureComponent是Component的一个优化组件，通过减少不必要的render操作的次数，从而可以提高界面的渲染性能
+```
+export class FooComponent extends React.PureComponent {
+
+}
+```
+React.PureComponent中的shouldComponentUpdate的关注点是UI界面是否需要更新，而render的关注点在于虚拟DOM的diff过程。
+PureComponent中的shouldComponentUpdate只会对对象进行浅层对比。如果对象包含复杂的数据结构，它可能会因深层的数据不一致而产生错误的判断。当组件只有简单的props和state，才能使用PureComponent，或者知道深层数据的数据已经发生变化时，可以使用forceUpdate()
+#### Immutable 持久性数据结构库
+```
+const a = { foo: 'bar'}
+const b = a;
+b.foo = 'baz';
+a === b; //true
+```
+a和b指向同一片内存空间
+Immutable是一旦创建就不能被修改的数据。数据对象的任何修改都会返回一个新的Immutable对象，同时原来的对象依旧可用保持不变，这就是持久化数据结构。
+为了避免deepCopy带来的性能损耗，Immutable使用了结构共享，即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其他节点则进行共享。
+Immutable提供了如下几种数据结构
+1. List (Array)
+2. Map (Object)
+3. OrderedMap (有序Map)
+4. Set
+5. OrderedSet (有序的set)
+6. Stack 有序集合
+7. Record
+8. Seq
+9. Collection
+
+#### Immutable与原生JS的相互转换
+1. JS -> Immutable
+Immutable.fromJS(value, converter)
+2. Immutable -> JS
+ImmutableDate.toJS()
+
+#### Immutable中对象的比较
+1.值比较
+Immutable.is(map1, map2)
+2.引用比较
+'==='
+## 2021.10.20
+### react-router
+#### react-router的三种模式
+1.broswerHistory
+2.hashHistory
+3.createMemoryHistory(基于服务端渲染)
+```
+const history = createMemoryHistory(location)
+```
+## 2021.10.14
+### react事件与表单
+React事件系统相比浏览器事件系统主要做了两件事: 事件代理和事件自动绑定
+#### 合成事件的事件代理:
+React把所有定义的事件都绑定到结构的最顶层。使用一个事件监听器watch监听所有事件，并且它内部包含一个映射表，记录了事件与组件事件处理函数的对应关系。当事件触发时，React会根据映射关系找到真正的事件处理函数并调用。当组件被安装或者卸载的时候，对应的函数会被自动添加到事件监听器的内部映射表或者从表中删除。
+#### 合成事件的事件自动绑定:
+ES6 class和函数组件默认不会绑定this
+手动绑定this
+1.在构造函数中使用bind绑定
+2.箭头函数绑定this
+3.bind直接绑定
+4.初始化使用箭头函数绑定this,调用时无需再绑定
+
+### 合成事件与原生事件的混用
+本质上，React的合成事件系统是属于原生浏览器的子集。所以在原生事件中阻止冒泡可以阻止React的合成事件冒泡，反之在React的合成事件中阻止冒泡无法阻止原生事件的冒泡。
+### 受控组件
+表单的状态都是写入到组件的state中，这种组件就被称为受控组件
+#### 非受控组件
+这时表单数据将交由 DOM 节点来处理。
+### flux架构
+flux的核心思想是利用单项数据流和逻辑单向流来应对MVC架构中出现状态混乱的问题。
+flux的三个组成部分: Dispatcher, Store, View。其中，Dispatcher用于分发事件，Store用于存储应用状态，同时响应事件并更新数据。
+flux单向数据流 Action -> Dispatcher -> Store -> View
+### Redux
+Redux的三大特性
+1.单一数据源
+2.state是只读的(改变state的唯一方法就是触发Action,通过Store.dispatch(Action)来改变Store中的state)
+3.使用纯函数来执行修改
+Redux由3部分组成: Action, Reducer, Store
+Action用来表达动作, Reducer主要根据Action执行去更新Store中的状态
+Store中的主要API:
+getState()方法用于获取state
+dispatch(action)用于执行一个Action
+subscribe(listener)用于注册回调，监听state变化
+replaceReducer(nextReducer)更新当前Store内的Reducer
+createStore创建Store,
+```
+let store = createStore(reducer, window.STATE_FROM_SERVER)
+```
+#### react-redux
+两个重要的对象: Provider和connect
+使用react-redux时需要先在最顶层创建一个Provider组件，用于将所有的React组件包裹起来，从而使React的所有组件都成为Provider的子组件。然后将创建好的Store作为Provider的属性传递给Provider
+connect的主要作用是连接React组件与Redux Store。当前组件可以通过props获取应用中的state和Actions
+#### middleware
+middleware本质上就是通过插件的形式,将原本Action -> Reducer的流程改为Action->middleware->Reducer
+使用中间件applyMiddleware(logger, crashReporter)
+
+## 10.12
+### react组件生命周期
+#### 组件的挂载
+constructor 
+static getDerivedStateFromProps()
+render()
+componentDidMount()
+#### 数据的更新过程
+static getDerivedStateFromProps()
+shouldComponentUpdate()
+componentWillUpdate()
+render()
+getSnapshotBeforeUpdate()
+componentDidUpdate()
+#### 组件的卸载
+componentWillUnmount()
+#### 错误处理
+componentDidCatch()
+
+## 2021.10.11
+### react组件的几种写法
+#### ES6写法
+React.component这种方法不会自动绑定this，需要手动绑定this
+#### 无状态的函数组件
+如果一个组件不需要管理state,知识单纯的展示，可以使用函数组件
+无状态的函数式组件在需要状态的时候可以使用高阶组件(HOC),无状态函数组件作为高阶组件的参数，高阶组件内存放需要的生命周期和状态
+#### setState()
+React将需要更新的state合并后放入状态队列，触发调和过程，而不是立即更新state，而是根据新的状态结构重新渲染UI界面，最后react会根据差异对界面进行最小化更新
+### react组件间传值
+#### 父子组件
+父组件传值给子组件
+调用子组件的时候属性名称，子组件可以直接用props进行调用
+子组件传值给父组件
+回调函数
+#### 跨级组件通信
+使用context,context的设计模式属于生产-消费模式
+### 任意组件通信 
+eventemitter
+## 2021.09.28
+### canvas
+canvas的普通配置
+```
+let defaultOptions = {
+    radius: 200,
+    legendParms: {
+        font: "24px Arial",
+        x: 30,
+        y: 30,
+        margin: 50,
+        width: 40,
+        height: 24
+    }
+}
+```
+//获取context环境
+this.context = canvas.getContext("2d");
+this.width = canvas.getAttribute("width") || 300;
+this.height = canvas.getAttribute("height") || 300;
+//合并参数
+this.options = Object.assign(defaultOptions, options);
+
+PieChart.prototype.load = function(data) {
+    data.foreach(item => this.count ? this.count += item.value : item.count = item.value);
+    this.data = data;
+    return this;
+}
+
+PieChart.prototype.render = function() {
+    let _generate
+}
+### localStorage判断装满和剩余空间大小
+理想的方案
+假设我们回到起点，从零建设前端工程，我们怎么避免 localStorage 存满的问题？
+
+1、划分域名。各域名下的存储空间由各业务组统一规划使用
+
+2、跨页面传数据：考虑单页应用、优先采用 url 传数据
+
+3、最后的兜底方案：清掉别人的存储
+```
+const QUOTA_EXCEEDED_ERR_CODE = 22
+function write (key, data) {
+    try {
+        localStorage.setItem(key, data);
+    } catch (e) {
+        if (e.code === QUOTA_EXCEEDED_ERR_CODE) {
+            localStorage.clear();
+            localStorage.setItem(key, data);
+        }
+    }
+}
+```
+### localStorage的剩余空间
+total_num - current_num 
+current_num = JSON.stringify(localStorage).length
+### 获取localStorage的最大容量
+```
+(function() {
+    if(!window.localStorage) {
+        console.log('当前浏览器不支持localStorage!')
+    }
+    var test = '0123456789';
+    //10B
+    var add = function(num) {
+        num += num;
+        if(num.length == 10240) { //10KB
+            test = num;
+            return;
+        }
+        add(num);
+    }
+    add(test);
+    var sum = test;
+    //sum是10kb的字符串
+    var show = setInterval(function() {
+        sum += test;
+        try {
+            window.localStorage.removeItem('test');
+            window.localStoage.setItem('test' ,sum);
+            console.log(sum.length / 1024 + 'KB');
+        } catch(e) {
+            alert(sum.length / 1024 + 'KB超出最大限制');
+            clearInterval(show);
+        }
+    }, 20);
+})();
+```
+## 2021.09.26
+### 摇一摇功能的实现
+主要API devicemotion
+考虑x,y,z三个方向的加速度变化速率，如果大于阈值则可以触发阈值，并把这一次的加速度记录下来，作为下一次比较的值
+### 离线和存储
+.manifest文件 和 .appcache 文件指定哪些是需要缓存的文件和永不缓存的文件
+
+## 2021.09.07
+### 非对称加密的原理
+RSA非对称加密原理
+1.找出质数P,Q
+2.计算公共模数N
+3.欧拉函数 (P-1)(Q-1)
+4.计算公钥 1 < E < (P-1)(Q-1)的质数
+5.计算私钥D E * D * (P-1)(Q-1) = 1
+6.公钥加密 C = ME mod N
+7.私钥解密 M = CD mod N
+
+### JWT的使用
+1.传统的session认证
+在服务器短存储一份用户登录的信息，这份登录信息会在响应时传递给浏览器，告诉其保存为cookie,以便下次请求时发送给我们的应用。
+session认证的问题
+1.经过认证之后，每次都需要在服务端做一次记录，以方便用户下次请求的鉴别，服务端开销较大
+2.扩展性：在分布式应用中，用户请求必须在同一台服务器上才行
+3.cookie被截获，可以发动CSRF
+### 基于token的鉴权机制
+优势：不需要在服务端保存认证信息
+JWT的构成
+1.header
+2.payload
+3.signature
+头部:声明类型，声明加密算法，base64加密，可以对称解密
+payload中的信息
+1.标准中注册的信息
+ss: jwt签发者
+sub: jwt所面向的用户
+aud: 接收jwt的一方
+exp: jwt的过期时间，这个过期时间必须要大于签发时间
+nbf: 定义在什么时间之前，该jwt都是不可用的.
+iat: jwt的签发时间
+jti: jwt的唯一身份标识，主要用来作为一次性token,从而回避重放攻击。
+2.公共的声明
+可以在客户端解密
+3.私有声明
+base64加密的header和payload
+对secret进行加盐加密，secret就是用来进行jwt的签发和jwt的验证的，就是服务端的私钥
+jwt加入到Authorization字段中
+## 2021.09.06
+### Node的事件循环
+Node中的Event loop和浏览器中的不同，分为6个阶段
+timers -> I/O callbacks -> idle, prepare -> poll -> check -> close callbacks
+1. timers阶段
+timers阶段会执行setTimeout 和 setInterval
+2. I/O callbacks
+I/O 阶段会执行除了close事件，定时器，setImmediate的回调
+3. poll
+执行到点的计时器
+执行poll队列中的事件
+4. check
+check执行setImmedaite的回调
+5. close callbacks执行close事件 
+### history模式中会报错的原因
+vue是单页面应用，刷新默认会请求对应路径下的html文件，而实际上整个程序只有一个index.html,所以会报错404，
+用try_files来兜底，无法匹配的时候，跳转回主页，
+只要请求某个应用下的资源，都返回这个应用的入口回去(index.html)，路径什么的都交给入口处理。
+
+
+## 2021.09.03
+### await使用
+await在for循环中是顺序的，如果行并发用promise.all
+### 同步请求和异步请求
+当浏览器向服务器发送同步请求时，服务处理同步请求的过程中，浏览器会处于等待的状态，
+服务器处理完请求把数据响应给浏览器并覆盖浏览器内存中原有数据，浏览器--重新加载页面并展示服务器响应的数据
+### 异步请求的原理
+浏览器把请求交给代理对象-XMLHttpRequest,由代理对象向服务器发起请求，接收，解析服务器响应的数据，并把数据更新到浏览器指定的控件上。从而实现页面数据的局部刷新
+
+### ajax
+#### 创建ajax基本步骤
+基于dom事件创建XHR对象(XMLHttpRequest)
+注册XHR对象状态监听,通过回调函数(callback)处理状态信息
+创建与服务端的连接
+发送异步请求实现与服务端的通讯
+通过回调(callback)函数,获得响应结果并进行数据更新
+#### ajax状态码
+0:为初始化，尚未调用open()方法[]
+1:启动，此时已经调用了open()方法，还没有调用send()方法
+2:发送，此时已经调用了send()方法，但是还没有接受到来自服务器的响应
+3:接收，已经接收了部分响应
+4:完成，已经接收到全部响应数据，而且可以在客户端响应
+
+## 09.02
+### vue与原生js的区别
+1.控件和数据自动绑定
+可以直接使用data中的数据来提交表单
+2.页面参数传递和页面状态管理
+3.模块化开发
+4.局部刷新保留参数场景
+5.众多的npm包
+6.主路由，子路由，主页面，子页面，彻底放弃iframe
+7.各子组件的样式不冲突
+### 移动端适配方案
+基本概念： 
+PPI: 像素密度，每英寸所拥有的像素数
+DPI: 每英寸印刷出来的点有多少个，值越高，图片越细腻
+DPR: 物理像素/css像素
+百分比布局
+rem布局：根据屏幕的宽度设置html标签的font-size
+
+
+## 2021.09.01
+
+### 原生js实现图片懒加载
+需要判断图片是否处于可视窗口内
+offsetTop < scrollTop + innerHeight && offsetTop >= scrollTop
+
+```
+window.addEventListener('scroll', function() {
+    lazyLoading()
+})
+
+function lazyLoading() {
+    let imgs = document.getElementsByTagName('img');
+    let bodyScrollHeight = document.body.scrollTop || document.documentElement.scrollTop;
+    let windowHeight = window.innerHeight;
+
+    let newimgs = Array.prototype.slice.apply(imgs)
+    for(let i = 0; i < imgs.length; i++) {
+        let imgHeight = imgs[i].offsetTop;
+        if(imgHeight < bodyScrollHeight + windowHeight && imgHeight >= bodyScrollHeight) {
+            setTimeout(function() {
+                imgs[i].setAttribute('src', imgs[i].getAttribute('data-src'))
+            }, 1000)
+        }
+    }
+}
+```
+
+### 实例修改原型的两种情况
+基本数据类型在实例修改时会直接在实例上创建该属性，而不会在原型上修改，引用类型在实例修改时会改变原型对象上的属性
+实例给原型对象上定义的属性赋值时，会在实例上创建一个同名的属性，而不会去赋值原型对象上的属性。
+当原型对象的属性为引用类型时，如果通过修改该引用类型（也称对象，每一个对象都是键值对的组合）的属性，会直接修改原型上面的引用类型。
+显式原型: prototype
+隐式原型: __proto__
+![avatar](/1.png)
+
+### 构造函数内的属性
+构造函数内定义的属性/方法，对实例来说是不共享的，每一个实例都有各自的一份。互不影响！！
+被继承的原型对象中属性/方法是共享的，所有实例全可以共享其构造函数中原型对象的属性/方法；
+### 
+## 2021.08.30
+### 渲染十万条数据不卡住页面
+```
+setTimeout(() => {
+    const total = 100000
+    const once = 20
+    const loopCount = total / once
+    let countOfRender = 0
+    let ul = document.querySelector("ul");
+    function add() {
+        const fragment = document.createDocumentFragment();
+        for(let i = 0; i < once; i++) {
+            const li = document.createElement("li")
+            li.innerText = Math.floor(Math.random() * total);
+            fragment.appendChild(li);
+        }
+        ul.appendChild(fragment);
+        countOfRender += 1;
+        loop();
+    }
+    function loop() {
+        if(countOfRender < loopCount) {
+            window.requestAnimationFrame(add);
+        }
+    }
+    loop();
+}, 0);
+```
+### 事件委托
+IE中的event.srcElement和firefox的event.target
+事件委托的原理：
+当子元素的事件冒泡到父ul元素时，你可以检查事件对象的target属性，捕获真正被点击的节点元素的引用。
+```
+document.getElementById('parent-list').addEventListener("click", function(e) {
+    if(e.target && e.target.nodeName == "LI") {
+        console.log("List item ", e.target)
+    }
+})
+```
+## 2021.08.27
+### CDN回源
+回源大致是指浏览器在发送请求报文时，响应该请求报文的是源站点的服务器，而不是各节点上的缓存服务器。
+回源请求太多的画，可能会让源站点的服务器承载过大的访问压力，进而影响服务的正常访问。
+回源比:
+回源请求数比例:收集所有边缘节点上的请求记录，没有缓存或缓存过期的请求以及不可缓存的请求均被作为回源请求，发往源站点服务器响应。其他的请求则由缓存系统直接使用缓存响应。其计算公式为：回源请求数/（回源请求数+用户发送的请求数）
+回源流量比：即用户所产生的流量当中，有多少流量是直接有源站点服务器响应的，其计算公式为：回源流量/（回源流量+用户请求访问的流量）
+在CDN环境下，web访问数据通常会经历客户端本地缓存和CDN边缘节点缓存两个阶段。
+如果这两个阶段都无法响应客户的请求的话，那么最后由CDN节点向源站点发起回源请求，进而从源站获取最新的数据，更新CDN节点的本地缓存，最后将最新的数据返回给客户端。CDN节点的缓存机制也遵循http协议，因此也受到Cache-Control等字段的影响，因此CDN节点上的缓存时间的长短会对回源率产生直接的影响。若CDN缓存时间较短，CDN边缘节点的数据经常会失效，导致频繁回源，增加源站负载，同时也增大了访问延时，若CDN缓存时间太长，会带来数据更新时间慢的问题。
+
+由于网站的DNS域名解析服务器对此域名的解析设置了CNAME，请求被指向CDN网络中的智能DNS负载均衡系统，智能DNS负载均衡系统对域名进行智能解析，将响应速度最快的节点IP返回给用户。
+
+浏览器在得到速度最快节点的IP地址以后，向CDN节点发出访问请求，由于是第一次访问，CDN节点将回到源站取用户请求的数据并发给用户，当有其他用户再次访问同样内容时，CDN将直接将数据返回给客户，完成请求/服务过程。
+
+### Object.assign
+当对象中只有一级属性，没有二级属性的时候，此方法为深拷贝，但是对象中有对象的时候，此方法，在二级属性以后就是浅拷贝。
+
+## 08.26 
+### 执行上下文
+Javascript引擎会用栈的方式来处理它们，这个称为函数调用栈，栈底一直都是全局上下文，栈顶是当前的执行上下文
+### JS预编译
+1. 语法分析
+2. 预编译
+3. 解释执行
+预编译有个特点：任何变量，如果未声明就赋值，那该变量为全局变量，即暗示全局变量（imply global）。并且所有的全局变量都是window的属性。
+AO对象
+执行期上下文，在函数执行前执行函数预编译，此时会产生一个AO对象，AO对象保存该函数的参数变量。
+函数预编译的步骤:
+产生AO对象
+将函数的参数以及函数里面声明的变量当做AO对象的属性名，值全部为undefined。
+将实参的值赋值给形参。
+在函数里面声明的函数，函数名作为AO对象的属性名，值赋值给函数体。（若参数名和函数名重叠，则函数体值会覆盖参数值）
+GO对象
+GO对象全称为 global object（全局对象，等同于window），在开始预编译时产生的对象，比AO对象先产生，用于存放全局变量，也称为全局作用域。
+预编译步骤
+1.生成GO对象
+2.将变量声明的变量名当做GO对象的属性名，值为undefinded
+3.将声明函数的函数名当做GO对象的属性名，值为函数体
+
+### vue mixin
+局部混入
+mixin: [mixinObjects]
+全局混入
+Vue.mixins(mixinObjects)
+用的时候直接this.就行了
+
+数据对象（data）在内部会进行递归合并，在和组件的数据发生冲突时以组件数据优先。
+同名钩子函数（created,mounted...）将混合为一个数组，因此都将被调用。另外，混入对象的钩子将在组件自身钩子之前调用。
+值为对象的选项（methods, components 和 directives）将被混合为同一个对象。两个对象键名冲突时，取组件对象的键值对。
+
+### addEventListener和onclick
+onclick事件在同一时间只能指向唯一对象
+addEventListner给一个事件注册多个listener
+addEventListener对任何DOM都是有效的，而onclick仅限于HTML
+addEventListener可以控制listener触发阶段，对于多个相同的事件处理器，不会重复触发，不需要手动使用
+removeEventListener清楚
+IE使用attachEvent
+addEventListener的useCaptrue false在冒泡阶段执行指定事件，true在捕获阶段执行事件
+
+## 2021.08.25
+### 事件委托
+```
+var oUl = document.getElementById("ul");
+var aLi = document.getElementsByTagName("li");
+oUl.onclick = function(ev) {
+    var ev = ev || window.event;
+    var target = ev.target || ev.srcElement;
+    if(target.nodeName.toLowerCase() == "li"){
+        for(var i=0; i<aLi.length; i++)
+            if(aLi[i] == target)
+            if(index>=0) alert(i);
+            target.style.background = "red";
+    }
+}
+```
+优点：1.可以大量节省内存占用，减少事件注册。比如ul上代理所有li的click事件就很不错。
+2.可以实现当新增子对象时，无需再对其进行事件绑定，对于动态内容部分尤为合适
+原理：事件冒泡机制
+
+### 通过js动态创建标签
+```
+    var child = document.createElement("div")
+    var parent = document.getElementById("parentId")
+    parent.appendChild(child)
+    child.setAttribute("id", "child")
+```
+
+### 改变原数组的方法
+shift unshift pop push reverse sort splice
+### 不改变原数组的方法
+concat join slice map filter some every
+### map set
+map.set('Adam', 67);
+map.has('Adam')
+map.get('Adam')
+map.delete('Adam')
+set.add(1);
+set.delete(1);
+
+### 网页的宽度和高度API
+网页可见区域宽： document.body.clientWidth （可变）
+网页可见区域高： document.body.clientHeight （可变）
+网页可见区域宽： document.body.offsetWidth (包括边线的宽)
+网页可见区域高： document.body.offsetHeight (包括边线的高)
+网页正文全文宽： document.body.scrollWidth
+网页正文全文高： document.body.scrollHeight
+网页被卷去的高： document.body.scrollTop
+网页被卷去的左： document.body.scrollLeft
+
+对应的dom元素的宽高有以下几个常用的：
+
+元素的实际高度：document.getElementById("div").offsetHeight
+元素的实际宽度：document.getElementById("div").offsetWidth
+元素的实际距离左边界的距离：document.getElementById(“div”).offsetLeft
+元素的实际距离上边界的距离：document.getElementById(“div”).offsetTop
+
+## 2021.08.24 
+### 拉取远程分支与本地合并
+拉取dev分支
+git checkout -b dev origin/dev
+git checkout master
+git merge dev
+
+git branch -d dev 删除新建立的分支
+## 2021.08.23
+### ES6的继承
+super关键字用于访问父对象上的函数
+super([arguments])
+super.functionOnParent([arguemnts]);
+super指代了整个prototype或者__proto__指向的对象
+## 2021.08.20
+### fetch超时设置
+```
+let timeoutPromise = (timeout) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve("我是timeoutPromise,已经完成了");
+        }, timeout);
+    });
+}
+let requestPromise = (url) => {
+    return fetch(url);
+}
+Promise.race([timeoutPromise(1000), requestPromise])
+```
+### promise失败后多次尝试重发请求
+```
+ Promise.retry = (fun, limit = 5) => {
+        return new Promise((resolve, reject) => {
+            let __num = 1;
+            let __run = () => {
+                fun()
+                    .then(res => {
+                        resolve(res);
+                    })
+                    .catch(err => {
+                        if (__num++ >= limit) {
+                            reject(err)
+                        } else {
+                            console.log('retry again!!')
+                            __run()
+                        }
+                    })
+            }
+            __run()
+        })
+    }
+    let k = 0
+    function test() {
+        return new Promise((resolve, reject) => {
+            if (++k >= 3) {
+                resolve(k)
+            } else {
+                reject('hhh')
+            }
+        })
+    }
+    Promise.retry(test).then(res => {
+            console.log('resolve: ', res)
+        }).catch(err => {
+            console.log('reject: ', err)
+        })
+        // retry again!!
+        // retry again!!
+        // resolve: 3
+```
+
+### promise的异常捕获
+try / catch无法捕获promise.reject
+try里面不能写异步代码
+把抛出异常的方法用promise包裹
+await获取fn的返回值
+async function func2() {
+  try {
+    await func3()
+  } catch (error) {
+    console.log('error')
+  }
+}
+
+function func3() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const r = Math.random()
+      if (r < 0.5) {
+        reject('error')
+      }
+    }, 1000)
+  })
+}
+## 2021.08.19 
+### Generator发送请求
+function* gen(){
+    var url = 'https://api.github.com'
+    var result = yield fetch(url)
+    console.log(result)
+}
+
+var g = gen();
+var result = g.next();
+
+result.value.then(function(data) {
+    return data.json();
+}).then(function(data) {
+    g.next(data);
+}
+)
+
+### Generator错误处理
+function* gen(x) {
+    try {
+        let y = yield x + 2;
+    } catch(e) {
+        console.log(e);
+    }
+    return y;
+}
+let g = gen(1);
+g.next();
+g.throw('出错了')
+## 2021.08.18
+### RESTful 
+API设计风格
+1.API与用户的通信协议，总是使用HTTPS协议
+2.将API部署在专用域名之下
+3.API版本号放入url
+4.在RESTful架构中，每个网址代表一种资源（resource），所以网址中不能有动词，只能有名词，而且所用的名词往往与数据库的表格名对应。一般来说，数据库中的表都是同种记录的"集合"（collection），所以API中的名词也应该使用复数。
+5.http动词(对资源的具体操作)
+GET 
+POST
+PUT
+PATCH
+DELETE
+6.过滤信息
+如果记录数量很多，服务器不可能都将它们返回给用户。API应该提供参数，过滤返回结果。
+7.状态码
+服务器向用户返回的状态码和提示信息
+8.错误处理
+如果状态码是4xx，就应该向用户返回出错信息
+9.返回结果
+针对不同操作，服务器向用户返回的结果应该符合以下规范。
+## 2021.08.17
+### 邮箱正则表达式
+^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$
+### OSI五层模型
+物理层  中继器，集线器，双绞线
+数据链路层 网桥，网卡，ARP
+网络层  路由器，三层交换机 IP ICMP RIP
+传输层  四层交换机，四层的路由器 TCP UDP
+应用层
+### 消费者生产者模型
+该问题描述了共享固定大小缓冲区的两个进程——即所谓的“生产者”和“消费者”——在实际运行时会发生的问题。
+生产者的主要作用是生成一定量的数据放到缓冲区中，然后重复此过程。与此同时，消费者也在缓冲区消耗这些数据。该问题的关键就是要保证生产者不会在缓冲区满时加入数据，消费者也不会在缓冲区中空时消耗数据。
+要解决该问题，就必须让生产者在缓冲区满时休眠（要么干脆就放弃数据），等到下次消费者消耗缓冲区中的数据的时候，生产者才能被唤醒，开始往缓冲区添加数据。同样，也可以让消费者在缓冲区空时进入休眠，等到生产者往缓冲区添加数据之后，再唤醒消费者。通常采用进程间通信的方法解决该问题，常用的方法有信号量等。如果解决方法不够完善，则容易出现死锁的情况。出现死锁时，两个线程都会陷入休眠，等待对方唤醒自己。该问题也能被推广到多个生产者和消费者的情形。
+生产者消费者模型的优点
+1. 支持并发
+2. 解耦
+3. 支持忙闲不均
+### 死锁
+死锁的定义：所谓死锁，是指多个进程在运行过程中因争夺资源而造成的一种僵局，当进程处于这种僵持状态时，若无外力作用，它们都将无法再向前推进。
+死锁产生的4个必要条件
+产生死锁的必要条件：
+互斥条件：进程要求对所分配的资源进行排它性控制，即在一段时间内某资源仅为一进程所占用。
+请求和保持条件：当进程因请求资源而阻塞时，对已获得的资源保持不放。
+不剥夺条件：进程已获得的资源在未使用完之前，不能剥夺，只能在使用完时由自己释放。
+环路等待条件：在发生死锁时，必然存在一个进程--资源的环形链。
+预防死锁：
+资源一次性分配：一次性分配所有资源，这样就不会再有请求了：（破坏请求条件）
+只要有一个资源得不到分配，也不给这个进程分配其他的资源：（破坏保持条件）
+可剥夺资源：即当某进程获得了部分资源，但得不到其它资源，则释放已占有的资源（破坏不可剥夺条件）
+资源有序分配法：系统给每类资源赋予一个编号，每一个进程按编号递增的顺序请求资源，释放则相反（破坏环路等待条件）
+
+## 2021.08.16
+### vue-router hash模式 history模式的区别
+```
+hash模式: hash以#开头，基于location.hash实现，hash改变时，页面不会刷新，浏览器也不会向服务器请求。
+然后用 window.onhashchange 监听 hash 的变化来做到触发对应时间加载对应资源来重新绘制页面。
+history模式: 基于pushState和replaceState实现，这两个方法改变URL的path部分不会引起页面刷新
+onpopstate事件与onhashchange事件有些不同，
+1.通过浏览器前进后退改变URL会触发onpopstate事件
+2.通过pushState和replaceState标签改变URL不会触发popState事件，我们可以拦截pushState和replaceState的调用来检测URL的变化
+3.通过js调用history的back,go,forward方法触发该事件
+history与hash的区别
+pushState相比于直接修改hash的优势
+1.pushState修改URL可以是与当前URL同源的任意URL，而hash只能修改#后面的,因此只能设置与当前URL同文档的URL
+2.pushState设置的新的URL可以与当前URL一模一样，这样的记录也会被加入到栈中，而hash设置的新值必须与原来的不一样才会触发动作将记录添加到栈中
+3.pushState通过stateObject参数可以添加任意类型的数据到记录中，而hash只可添加短字符串
+```
+### vue中computed实现
+```
+computed工作原理中的几个重要的内容
+1. computed也是响应式的
+用Object.defineProperty给computued设置的get和set函数，读取computed时，会执行你设置的get函数，并且缓存
+赋值computed时，会执行你设置的set函数。
+2. computed如何控制缓存
+computed缓存中最重要的一点就是脏数据标志位dirty,dirty是watcher的一个属性
+当 dirty 为 true 时，读取 computed 会重新计算
+当 dirty 为 false 时，读取 computed 会使用缓存
+一开始每个 computed 新建自己的watcher时，会设置 watcher.dirty = true，以便于computed 被使用时，会计算得到值
+当 依赖的数据变化了，通知 computed 时，会设置 watcher.dirty = true，以便于其他地方重新渲染，从而重新读取 computed 时，此时 computed 重新计算
+computed 计算完成之后，会设置 watcher.dirty = false，以便于其他地方再次读取时，使用缓存，免于计算
+3. 依赖的data改变了，computed如何更新
+data变化后的流程，computed重置脏数据标志位 dirty = true,不会计算值
+通知页面A watcher进行更新渲染，进而重新读取computed,然后computed B 开始重新计算
+data的依赖收集器会同时收集到computed B和页面A 的watcher
+computed更新，被依赖通知更新后，重置脏数据标志位，页面读取computed时再更新值
+```
+
+### 虚拟DOM的优缺点
+优点：
+保证性能下限: 虚拟DOM可以经过diff找出最小差异,然后批量进行patch,这种操作虽然比不上手动优化,但是比起粗暴的DOM操作性能要好很多,因此虚拟DOM可以保证性能下限
+无需手动操作DOM: 虚拟DOM的diff和patch都是在一次更新中自动进行的,我们无需手动操作DOM,极大提高开发效率
+跨平台: 虚拟DOM本质上是JavaScript对象,而DOM与平台强相关,相比之下虚拟DOM可以进行更方便地跨平台操作,例如服务器渲染、移动端开发等等
+缺点：
+无法进行极致优化: 在一些性能要求极高的应用中虚拟DOM无法进行针对性的极致优化，比如VScode采用直接手动操作DOM的方式进行极端的性能优化
+效率低，解析速度慢，内存占用量过高，对于大文件来说几乎不可能使用。另外效率低还表现在大量的消耗时间，因为使用DOM进行解析时，将为文档的每个element、attribute、processing-instrUCtion和comment都创建一个对象，这样在DOM机制中所运用的大量对象的创建和销毁无疑会影响其效率。
+### vue中组件的data为什么是一个函数
+```
+组件是可复用的vue实例，一个组件被创建好之后，就可能被用在各个地方，而组件不管被复用了多少次，组件中的data数据都应该是相互隔离，互不影响的，基于这一理念，组件每复用一次，data数据就应该被复制一次，之后，当某一处复用的地方组件内data数据被改变时，其他复用地方组件的data数据不受影响
+```
+### js中的作用域
+全局作用域： window对象，代表浏览器的一个窗口，全局作用域中声明的变量都是全局变量，使用var声明的是全局变量
+函数作用域: 调用函数时创建函数作用域，每调用一次函数作用域就会创建一个新的函数作用域，他们之间是相互独立的
+块级作用域： 块作用域由 { } 包括，if语句和for语句里面的{ }也属于块作用域。
+词法作用域： 函数的作用域在函数定义的时候就决定了（取决于函数定义的位置）
+动态作用域: 函数的作用域在函数调用的时候就决定了（取决于函数的调用）
+
+### vue路由当中的导航钩子中关于next()方法的理解
+1. next()
+next()：进行管道中的下一个钩子。如果全部钩子执行完了，则导航的状态就是confirmed(确认的)。
+2. next(false)
+next(false)中断当前的导航。如果浏览器的 URL 改变了 (可能是用户手动或者浏览器后退按钮)，那么 URL 地址会重置到from路由对应的地址。
+3. next('/')
+next( '/')或者next({ paht：'/' })：跳转到一个不同的地址。当前的导航被中断，然后进行一个新的导航。可传递的参数可以是router-link标签中的to属性参数或router.push中的选项
+4. next(error)
+next( error )：如果传入next的参数是一个Error实例，则导航会被终止且该错误会被传递给router.onError()注册过的回调。
+## 2021.08.13
+
+### MVC MVP MVVM
+```
+MVC 允许在不改变视图的情况下改变视图对用户输入的响应方式，用户对 View 的操作交给了 Controller 处理，在 Controller 中响应 View 的事件调用 Model 的接口对数据进行操作，一旦 Model 发生变化便通知相关视图进行更新。
+MVVM 与 MVC 最大的区别就是：它实现了 View 和 Model 的自动同步，也就是当 Model 的属性改变时，我们不用再自己手动操作 Dom 元素来改变 View 的显示，而是改变属性后该属性对应 View 层显示会自动改变。
+MVP 全称是 Model - View - Presenter ，是模型(model)－视图(view)－呈现器(presenter)的缩写。
+Model：业务逻辑和数据处理(数据库存储操作，网络数据请求，复杂算法，耗时操作)。
+View : 对应于 Activity，负责 View 的绘制以及与用户交互。
+Presenter：负责完成 View 与 Model 间的交互 (有一点还需要注意，presenter 是双向绑定的关系，因此，在设计的时候就要注意接口和抽象的使用，尽可能的降低代码的耦合度，这也是 mvp 的宗旨)。
+MVC 和 MVP 的区别：
+MVC：
+
+1. MVC 的所有通信都是单向的。
+2. view 传送指令到 controller(用户也可以直接将指令传到 controller)。
+3. controller 完成业务逻辑后要求 model 改变状态。
+4. model 将新的数据发送到 view，用户得到反馈。
+   MVP：
+5. 各部分之间的通信都是双向的。
+6. View 与 Model 不发生联系，都通过 Presenter 传递
+7. View 非常薄，不部署任何业务逻辑，称为“被动视图”，即没有任何主动性，而 Presenter 非常厚，所有逻辑都部署在这里。
+```
+### js隐式类型转换
+```
+1.转成string类型: + 
+2.装成number类型: ++/--(自增自减运算符) + - * %(算数运算符) 关系运算符
+3.转换成boolean类型: 逻辑非运算
+复杂数据类型在隐式转换时会先转成String,再转成Number运算
+以下8中情况转换为布尔类型会得到false
+0,-0,NaN,undefined,null,false,document.all()
+1.字符串连接符与算术运算符隐式，两边有一个字符串则可以视为字符串连接
+2.关系运算符会把其他数据类型转换成number之后再比较关系
+3.复杂数据类型在隐式转换时会先转成String,然后再转成Number运算
+```
+## 2021.08.12
+
+### webpack 构建流程
+```
+1. 初始化参数： 从配置文件和Shell语句中读取与合并参数，得出最终的参数
+2. 开始编译: 用上一步得到的参数初始化Compiler对象，加载所有配置的插件，执行对象的run方法开始执行编译
+3. 确定入口: 根据配置中的entry找出所有的入口文件
+4. 编译模块: 从入口文件出发，调用所有配置的Loader对模块进行翻译，再找出该模块依赖的模块，在递归本步骤直到所有入口
+依赖的文件都经过了编译处理
+5. 完成模块编译: 在经过第4步使用Loader翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系
+6. 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的chunk，再把每个chunk转换成一个单独的文件加入
+到输出列表，这步是可以修改输出内容的最后机会
+7. 输出完成： 在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统
+```
+### webpack 的事件流机制
+```
+webpack 是基于事件流的插件集合，它的工作流程就是将各个插件串联起来，而实现这一切的核心是 Tapable,Tapable 是一个类似
+Node.js 的 EventEmitter 的库，主要控制钩子函数的发布与订阅，控制着 webpack 的插件系统。webpack 中最核心的负责编译的 Compiler 和负责创建捆绑包的 Compliation 都是 Tapable 实例。Tabable 库暴露很多 hook 类，为插件提供挂载的钩子。
+钩子分为异步钩子和同步钩子，总共有 9 个：
+SyncHook, // 同步钩子
+SyncBailHook, // 同步熔断钩子
+SyncWaterfallHook, // 同步流水钩子
+SyncLoopHook, // 同步循环钩子
+AsyncParallelHook, // 异步并发钩子
+AsyncParallelBailHook, // 异步并发熔断钩子
+AsyncSeriesHook, // 异步串行钩子
+AsyncSeriesBailHook, // 异步串行熔断钩子
+AsyncSeriesWaterfallHook // 异步串行流水钩子
+```
+## 2021.08.11
+
+### webpack 中 loader 和 plugin 的区别
+```
+1. loader
+   由于 webpack 本身只能打包 commonjs 规范的 js 文件，所以针对 css，图片等格式的文件没法打包，就需要引入第三方的模块进行打包
+   loader 扩展了 webpack，只专注于转化文件这一个领域，完成压缩 / 打包 / 语言翻译等，仅仅只是为了打包，仅仅只是为了打包
+2. plugin
+   plugin 也是为了扩展 webpack 的功能，plugin 是作用于 webpack 本身的
+   从打包优化到压缩，到重新定义环境变量，webpack 提供了很多开箱即用的插件
+   从运行时机的角度区分
+3. loader 运行在打包文件之前，loader 为在模块加载时的预处理文件
+4. plugins 在整个编译周期 都起作用
+```
+### typescript 集锦
+
+#### interface 和 type
+
+type 可以声明基本类型和联合类型的别名
+type Pet = Dog | Cat
+type 语句中还可以使用 typeof 获取实例的 类型进行赋值
+interface 能够声明合并
+
+#### Typescript 实用工具类型
+
+Partial 将接口中的所有属性变为可选属性
+Pick 在 T 中抽取一组属性 K 构建一个新类型
+ReturnType 返回 function 的返回值类型
+Omit 在 T 中抽取除去 K 的其他属性，与 Pick 相对
+
+## 2021.08.10
+
+### $nextTick
+```
+vue对DOM的更新策略，vue在更新DOM时是异步执行的。只要执行到数据变化，Vue将开始一个事件队列，并缓冲在同一事件循环中
+发生的所有数据变更。如果同一个watcher被多次触发，只会被推入到事件队列中一次。
+在vue.js中，当状态发生变化的时候，watcher就会得到通知，然后触发虚拟DOM的渲染流程
+next-tick.js 对外暴露了nextTick这一个参数，所以每次调用Vue.nextTick时会执行：
+
+把传入的回调函数cb压入callbacks数组
+执行timerFunc函数，延迟调用 flushCallbacks 函数
+遍历执行 callbacks 数组中的所有函数
+这里的 callbacks 没有直接在 nextTick 中执行回调函数的原因是保证在同一个 tick 内多次执行nextTick，不会开启多个异步任务，而是把这些异步任务都压成一个同步任务，在下一个 tick 执行完毕。
+```
+### vue2 和 vue3 的区别
+```
+1. vue2 和 vue3 双向数据绑定原理发生了改变
+   vue2 的双向数据绑定是利用 ES5 的一个 API Object.definePropert()对数据进行劫持 结合 发布订阅模式的方式来实现的。
+   vue3 中使用了 es6 的 ProxyAPI 对数据代理。
+   相比于 vue2.x，使用 proxy 的优势如下
+   defineProperty 只能监听某个属性，不能对全对象监听
+   可以省去 for in、闭包等内容来提升效率（直接绑定整个对象即可）
+   可以监听数组，不用再去单独的对数组做特异性操作 vue3.x 可以检测到数组内部数据的变化
+2. 默认进行懒观察（lazy observation）。
+   在 2.x 版本里，不管数据多大，都会在一开始就为其创建观察者。当数据很大时，这可能会在页面载入时造成明显的性能压力。3.x 版本，只会对「被用于渲染初始可见部分的数据」创建观察者，而且 3.x 的观察者更高效。
+3. 更精准的变更通知。
+   比例来说：2.x 版本中，使用 Vue.set 来给对象新增一个属性时，这个对象的所有 watcher 都会重新运行；3.x 版本中，只有依赖那个属性的 watcher 才会重新运行。
+4. 3.0 新加入了 TypeScript 以及 PWA 的支持
+5. 性能比 vue2 更好，重写了虚拟 DOM 实现，运行时编译，update 性能提高，SSR 速度提高
+6. tree-shaking support 按需打包
+7. Composition API
+8. Fragment Teleport Suspense
+9. Custom Renderer API
+   这个 api 定义了虚拟 DOM 的渲染规则，这意味着使用自定义 API 可以达到跨平台的目的。
+```
+## 2021.08.09
+
+### 伪类和伪元素
+```
+根本区别：是否创造了新的元素
+伪元素不在于 DOM 文档中，是虚拟的元素，创建了新的元素，代表某个元素的子元素，这个子元素不存在于文档树种
+伪类存在于 DOM 文档中，用于向某些选择器添加特殊的效果
+伪类的效果可以通过添加实际的类来实现
+伪元素的效果可以通过添加实际的元素来实现
+所以它们的本质区别就是是否抽象创造了新元素
+伪类:
+:active
+:focus
+:hover
+:link
+:visited
+:first-child
+伪元素：
+::before
+::after
+::first-line
+::first-letter
+```
+### promise API
+```
+promise.all 如果全部成功，返回值是一个
+Promise.all 可以将多个 Promise 实例包装成一个新的 Promise 实例。同时，成功和失败的返回值是不同的，成功的时候返回的是一个结果数组，而失败的时候则返回最先被 reject 失败状态的值。
+Promise.race(iterable) 方法返回一个 promise，一旦迭代器中的某个 promise 解决或拒绝，返回的 promise 就会解决或拒绝。
+Promise.allSettled()方法返回一个在所有给定的 promise 都已经 fulfilled 或 rejected 后的 promise，并带有一个对象数组，每个对象表示对应的 promise 结果。
+Promise.finally() 方法返回一个 Promise。在 promise 结束时，无论结果是 fulfilled 或者是 rejected，都会执行指定的回调函数。这为在 Promise 是否成功完成后都需要执行的代码提供了一种方式。
+Promise.any() 接收一个 Promise 可迭代对象，只要其中的一个 promise 成功，就返回那个已经成功的 promise 。如果可迭代对象中没有一个 promise 成功（即所有的 promises 都失败/拒绝），就返回一个失败的 promise 和 AggregateError 类型的实例，它是 Error 的一个子类，用于把单一的错误集合在一起。本质上，这个方法和 Promise.all()是相反的。
+```
+## 2021.08.06
+
+### 把新增属性变成响应式的
+
+vm.$set(target,prop/index,value)
+
+### 回流重绘与事件循环
+```
+eventloop 执行完 microtasks 后，会判断 document 是否需要更新，因为浏览器是 60Hz 的频率，
+判断是否有 resize 或是 scroll 事件，有的话会触发事件，判断是否触发 media query,更新动画并且发送事件，
+执行 requestanimationFrame 回调，执行 IntersectionObserver 回调，判断元素是否可见，更新界面
+如果一帧中有空闲，执行 requestIdlecallback 回调
+```
+### 事件循环
+```
+所有的任务可以分为同步任务和异步任务，同步任务，顾名思义，就是立即执行的任务，同步任务一般会直接进入到主线程中执行；而异步任务，就是异步执行的任务，比如 ajax 网络请求，setTimeout 定时函数等都属于异步任务，异步任务会通过任务队列的机制(先进先出的机制)来进行协调
+
+同步和异步任务分别进入不同的执行环境，同步的进入主线程，即主执行栈，异步的进入任务队列。主线程内的任务执行完毕为空，会去任务队列读取对应的任务，推入主线程执行。 上述过程的不断重复就是我们说的 Event Loop (事件循环)。
+在事件循环中，每进行一次循环操作称为 tick，通过阅读规范可知，每一次 tick 的任务处理模型是比较复杂的，其关键的步骤可以总结如下： 1.在此次 tick 中选择最先进入队列的任务( oldest task )，如果有则执行(一次) 2.检查是否存在 Microtasks ，如果存在则不停地执行，直至清空 Microtask Queue 3.更新 render 4.主线程重复执行上述步骤
+宏任务主要包含：script( 整体代码)、setTimeout、setInterval、I/O、UI 交互事件、setImmediate(Node.js 环境)
+微任务主要包含：Promise、MutaionObserver、process.nextTick(Node.js 环境)
+```
+## 2021.08.05
+
+### webpack 中的 treeshaking
+```
+tree-shaking 原理
+利用 es6 模块的特点
+只能作为模块顶层的语句出现
+import 的模块名只能是字符串常量，不能动态引入
+import binding 是 immutable,引入的模块不能再做修改,依赖关系是确定的，和运行时的状态无关，可以进行可靠的静态分析，然后进行消除
+webpack 默认⽀持，在 .babelrc ⾥设置 modules: false 即可
+production mode 的情况下默认开启
+代码擦除： uglify 阶段删除⽆⽤代码
+DCE (Dead code elimination)
+代码不会被执⾏，不可到达
+代码执⾏的结果不会被⽤到
+代码只会影响死变量（只写不读）
+```
+## 2021.08.04
+
+### requestAnimationFrame
+```
+requestAnimationFrame(callback)
+特点:
+requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率
+在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的 CPU、GPU 和内存使用量
+requestAnimationFrame 是由浏览器专门为动画提供的 API，在运行时浏览器会自动优化方法的调用，并且如果页面不是激活状态下的话，动画会自动暂停，有效节省了 CPU 开销
+它返回一个整数，表示定时器的编号，这个值可以传递给 cancelAnimationFrame 用于取消这个函数的执行
+
+requestAnimation 实现 setTimeout
+
+let mockSetTimeout = (fn, time = 0) => {
+    let t = 0;
+    let timer = () => {
+        t += 1;
+        if(t * (1000 / 60) > time) {
+            fn();
+            cancelAnimationFrame(timer)
+        } else {
+            requestAnimationFrame(timer)
+        }
+    }
+    requestAnimationFrame(timer);
+}
+```
+
+## 2021.08.03
+
+TCP
+
+### 流量控制
+
+发送窗口的大小根据接收窗口的大小和网络的拥塞情况来进行设置
+发送端接收到应答报文之后，会随之将窗口进行滑动
+
+### 拥塞控制
+
+拥塞控制和流量控制不同，流量控制是用于 TCP 连接，而拥塞控制则是用于网络
+拥塞处理包含四个算法：慢开始，拥塞避免，快速重传，快速恢复
+
+#### 拥塞窗口
+
+发送方维持一个拥塞窗口 cwnd ( congestion window )的状态变量。拥塞窗口的大小取决于网络的拥塞程度，并且动态变化。发送方让自己的发送窗口等于拥塞窗口。
+
+#### 慢开始门限 ssthresh
+
+当 cwnd < ssthresh 时，使用上述的慢开始算法。
+当 cwnd > ssthresh 时，停止使用慢开始算法而改用拥塞避免算法。
+当 cwnd = ssthresh 时，既可使用慢开始算法，也可使用拥塞控制避免算法。
+
+#### 慢开始
+
+拥塞窗口设置为 1MSS,每过 1 个 RTT 就将窗口乘以 2
+
+#### 拥塞避免
+
+当 cwnd > ssthresh 时,启动拥塞避免，拥塞窗口大小每次加一
+无论在慢开始阶段还是在拥塞避免阶段，只要发送方判断网络出现拥塞（超时计时器 RTO 时限已到但还没有收到确认），就要把慢开始门限 ssthresh=cwnd/2（>=2），然后把拥塞窗口 cwnd=1，执行慢开始算法。
+
+#### 快重传 & 快恢复
+```
+快重传算法首先要求接收方每收到一个失序的报文段就立即发出重复确认（为的是使发送方及早知道有报文段没有到达对方），后若是发送方接收到 3 个重复确认 ACK，则启动快重传算法。
+发送方只要一连收到三个重复确认就应当立即重传对方尚未收到的报文段 M3，而不必继续等待 M3 设置的重传计时器 RTO 到期。
+拥塞窗口减半，将阈值设置为当前拥塞窗口，一旦受到一个新的 ACK 就退出该阶段，这种方式在丢失多个包的情况下就不能那么好了
+TCP new Reno 中，TCP 发送方先记下三个重复的 ACK 的分段的最大序号，原本 reno 算法的缺点：
+会多次将拥塞窗口（cwnd）和慢启动阈值（ssthresh）减半，造成 TCP 的发送速率呈指数降低系统吞吐量急剧下降，（当发送窗口小于 3 时）无足够的重复 ACK 可以触发快速恢复，只能等待超时重传。TCP Reno 终端会陷入仅通过传输超时来发现报文丢失的困境中。
+超时之后，cwnd 的值会被重设为 1，大大降低了 TCP 的传输效果。
+```
+
+## 2021.08.02
+
+### href 和 src
+```
+1、请求资源类型不同
+（1） href 是 Hypertext Reference 的缩写，表示超文本引用。用来建立当前元素和文档之间的链接。常用的有：link、a
+（2）在请求 src 资源时会将其指向的资源下载并应用到文档中，常用的有 script，img 、iframe
+2、作用结果不同
+（1）href 用于在当前文档和引用资源之间确立联系；
+（2）src 用于替换当前内容；
+3、 浏览器解析方式不同
+（1）若在文档中添加href ，浏览器会识别该文档为 CSS 文件，就会并行下载资源并且不会停止对当前文档的处理。这也是为什么建议使用 link 方式加载 CSS，而不是使用 @import 方式。
+（2）当浏览器解析到src ，会暂停其他资源的下载和处理，直到将该资源加载、编译、执行完毕，图片和框架等也如此，类似于将所指向资源应用到当前内容。这也是为什么建议把 js 脚本放在底部而不是头部的原因。
+```
+## 2021.07.30
+
+```
+for in 和 for of
+for ... in 循环不仅遍历数字键名，还会手动添加其他键，包括原型链上的键(也就是继承得来的键，
+如果需要将继承来的属性加以剔除，比如用hasOwnProperty(),即可获得对象的自有属性)。
+for ... in 循环主要是为了遍历对象，不适用于遍历数组，for ... in 的循环计数器是字符串类型的，遍历的是对象的
+所有可枚举属性, getOwnProperty()这个API可以获取obj的可枚举和不可枚举的所有属性
+for ... of 循环可以用来遍历数组，类数组对象，字符串，Set, Map以及Generator对象
+for ... of 用来循环可迭代的对象, 普通对象不能迭代，所以不能用for ... of
+
+遍历对象的5种方法
+
+for ... in
+Object.keys  //不包括不可枚举属性
+Object.getOwnPropertyNames   //包括不可枚举属性
+Object.getOwnPropertySymbols //返回对象自身的Symbol属性组成的数组，不包括字符串属性
+Reflect.ownKeys() // 返回对象自身所有属性名组成的数组，包括不可枚举属性和Symbol属性
+
+Symbol.iterator属性
+1.对象默认是不可迭代的，如果通过[Symbol.iterator]来定义迭代规则，那么对象就是可迭代的
+2.只有可迭代的对象，才能使用[...person]变成数组，ES6中的数组，Set/Map,字符串都有默认的迭代器和Symbol.iterator属性。
+3.通过生成器Generator返回的迭代器也是可迭代的对象，因为生成器默认会为Symbol.iterator属性赋值
+弱引用集合WeakSet与WeakMap的集合是不可迭代的。
+可迭代对象的Symbol.iterator属性是一个函数
+创建可迭代对象
+let test = {
+    items: [11,22,33],
+    *[Symbol.iterator]() {
+        for(let item of this.items){
+            yield item;
+        }
+    }
+}
+
+for(let item of test) {
+    console.log(item);
+}
+```
+
+## 2021.07.29
+
+完成了静态页面并进行了部分接口逻辑的编写
+
+## 2021.07.28
+
+完成项目的静态页面部分
+
+## 2021.07.27
+
+学习了 ES6 中的 proxy 和 generator,并搭好了项目的框架
+
+## 2021.07.26
+
+```
+JS toString 和 valueOf
+1.它的作用是返回一个反应这个对象的字符串
+2.它的作用是返回它相应的原始值
+```
+
+## 2021.07.23
+
+### promise 链式调用执行顺序
+
+```
+promise.resolve()
+1.不带参数时，直接返回一个resolved状态的promise对象
+promiseStatus: resolved
+promisedValued: undefined
+2.带参数时 参数回传给回调函数
+promiseStatus: resolved
+promiseValued: 参数
+每次调用then都会返回一个新创建的promise对象
+1.then方法中返回promise对象，则该对象作为then返回的新对象
+2.若返回的是一个非promise对象，则返回的新promise对象的promiseValue为该值
+3.若无返回值则返回的新promise对象的promiseValue为undefined
+
+只有返回promsie对象后才会链式调用。
+
+### js内存泄漏
+1.持续绑定的事件
+函数中addEventListener绑定事件，函数多次执行，绑定便会产生多次，产生内存泄漏。
+2.非严格模式下，未定义的变量会自动绑定在全局变量上
+3.被遗忘的计时器或回调函数
+4.脱离DOM的引用
+父节点会保存子节点的引用
+5.闭包
+每次调用都会占据非常多的空间
+```
+
+## 2021.07.22
+
+### CSS 硬件加速
+
+css3 开启硬件加速，通过 GPU 进行渲染，解放 CPU  
+触发 GPU 加速的属性： transform opacity filter will-change
+判断数组的四种方法
+
+```
+1. arr instancof Array
+2.arr.constructor == Array
+3. Array.isArray(arr)
+4.Object.prototype.toString.call(a) === '[object Array]'
+```
+第四种方法
+这是因为toString为Object的原型方法，而Array 、Function等类型作为Object的实例，都重写了toString方法。不同的对象类型调toString方法时，根据原型链的知识，调用的是对应的重写之后的toString方法（Function类型返回内容为函数体的字符串，Array类返回元素组成的字符串.....），而不会去调用Object上原型toString方法（返回对象的具体类型），所以采用obj.toString()不能得其对象类型，只能将obj转换为字符串类型；因此，在想要得到对象的具体类型时，应该调用Object上原型toString方法。
+## 2021.07.21
+
+### chrome 浏览器多进程架构
+
+```
+Chrome 采用多进程架构,其顶层存在一个 Browser process 用以协调浏览器的其它进程。
+优点:
+由于默认 新开 一个 tab 页面 新建 一个进程,所以单个 tab 页面崩溃不会影响到整个浏览器。
+同样,第三方插件崩溃也不会影响到整个浏览器。
+多进程可以充分利用现代 CPU 多核的优势。
+方便使用沙盒模型隔离插件等进程,提高浏览器的稳定性。
+
+浏览器进程
+1.主进程
+2.第三方插件进程
+3.GPU进程
+4.渲染进程
+4.1 JS引擎线程
+4.2 事件触发线程
+4.3 定时触发器线程
+4.4 异步http请求线程
+4.5 GUI渲染线程
+主进程 Browser Process
+负责浏览器界面的显示与交互。各个页面的管理,创建和销毁其他进程。网络的资源管理、下载等。
+第三方插件进程 Plugin Process
+每种类型的插件对应一个进程,仅当使用该插件时才创建。
+GPU 进程 GPU Process
+最多只有一个,用于 3D 绘制等
+渲染进程 Renderer Process
+称为浏览器渲染进程或浏览器内核,内部是多线程的。主要负责页面渲染,脚本执行,事件处理等
+1. GUI 渲染线程
+负责渲染浏览器界面,解析 HTML,CSS,构建 DOM 树和 RenderObject 树,布局和绘制等。
+当界面需要重绘或回流时,该线程就会执行。
+注意,GUI 渲染线程与 JS 引擎线程是互斥的,当 JS 引擎执行时 GUI 线程会被挂起（相当于被冻结了）,GUI 更新会被保存在一个队列中等到 JS 引擎空闲时立即被执行。
+2. JS 引擎线程
+Javascript 引擎,也称为 JS 内核,负责处理 Javascript 脚本程序。（例如 V8 引擎）
+JS 引擎线程负责解析 Javascript 脚本,运行代码。
+JS 引擎一直等待着任务队列中任务的到来,然后加以处理,一个 Tab 页（渲染进程）中无论什么时候都只有一个 JS 线程在运行 JS 程序。
+注意,GUI 渲染线程与 JS 引擎线程是互斥的,所以如果 JS 执行的时间过长,这样就会造成页面的渲染不连贯,导致页面渲染加载阻塞。
+3. 事件触发线程
+归属于浏览器而不是 JS 引擎,用来控制事件循环（可以理解,JS 引擎自己都忙不过来,需要浏览器另开线程协助）
+当 JS 引擎执行代码块如 setTimeOut 时（也可来自浏览器内核的其他线程,如鼠标点击、AJAX 异步请求等）,会将对应任务添加到事件线程中
+当对应的事件符合触发条件被触发时,该线程会把事件添加到待处理队列的队尾,等待 JS 引擎的处理
+注意,由于 JS 的单线程关系,所以这些待处理队列中的事件都得排队等待 JS 引擎处理（当 JS 引擎空闲时才会去执行）
+4.定时触发器线程
+setInterval 与 setTimeout 所在线程
+浏览器定时计数器并不是由 JavaScript 引擎计数的,（因为 JavaScript 引擎是单线程的, 如果处于阻塞线程状态就会影响记计时的准确）
+因此通过单独线程来计时并触发定时（计时完毕后,添加到事件队列中,等待 JS 引擎空闲后执行）
+注意,W3C 在 HTML 标准中规定,规定要求 setTimeout 中低于 4ms 的时间间隔算为 4ms。
+5.异步http请求线程
+在 XMLHttpRequest 在连接后是通过浏览器新开一个线程请求。
+将检测到状态变更时,如果设置有回调函数,异步线程就产生状态变更事件,将这个回调再放入事件队列中。再由 JavaScript 引擎执行。
+```
+
+## 2021.07.20
+
+### 模块化规范
+
+#### CommonJS
+
+服务端实现: Node.js
+浏览器端实现: Browserify
+node.js 内部提供一个 Module 构建函数，所有模块都是 Module 的实例。每个模块内部，都有一个 Module 对象，代表当前模块，包含如下属性：
+
+id：模块的识别符，通常是带有绝对路径的模块文件名
+filename：模块的文件名，带有绝对路径
+loaded：返回一个布尔值，表示模块是否已经完成加载
+parent：返回一个对象，表示调用该模块
+children：返回一个数组，表示该模块要用到的其他模块
+exports：表示模块对外输出的值
+通过 require 方法同步加载，通过 exports 或 module.exports 导出需要暴露的数据，一个文件就是一个模块
+使用 require 函数加载模块 1.按路径加载模块 2.通过查找 node_modules 目录加载模块 3.加载缓存 Node.js 是根据实际文件名缓存，而不是 require()提供的参数缓存 4.所有模块都有单独作用域，不会污染全局作用域
+使用 exports 导出值和方法
+Node.js 为每个模块提供一个 exports 变量，指向 module.exports exports = module.exports
+exports 对象和 module.exports 对象，指向一个内存空间，module.exports 对象才是真正的暴露对象
+exports 对象是 module.exports 对象的引用，不能改变指向，只能添加属性和方法
+commonJS 特点:
+commonJS 的 require 是直接传入路径
+
+#### AMD
+
+1.采用异步加载
+AMD 的 require([module, callback]);
+[module]是一个数组，成员就是要加载的模块 2.模块的创建及规范模块加载
+如果一个模块不依赖其他模块，直接定义在 define()函数中
+如果有依赖，define 的第一个参数，必须是一个数组
+define([module],function(){})
+AMD 允许输出的模块兼容 CommonJs
+异步并行加载，不阻塞 DOM 渲染
+推崇依赖前置，也就是提前执行，在模块之前就已经执行完毕
+
+### CMD
+
+CMD 是通用模块加载，要解决的问题与 AMD 一样，只不过是对依赖模块的执行时机不同，推崇就近依赖
+factory 是函数时有三个参数, function(require, exports, module)
+require 函数用来获取其他模块提供的接口 require(模块标识 ID)
+exports 对象用来向外提供模块接口
+module 对象,存储了与当前模块相关联的属性和方法
+
+### ES6 module
+
+对于模块的依赖，CommonJS 是动态的，ES6 Module 是静态的
+CommonJS 导入的是值的拷贝，ES6 Module 导入的是值的引用
+动态是指对于模块的依赖关系建立在代码执行阶段； 静态是指对于模块的依赖关系建立在代码编译阶段
+CommonJS 导入的变量是对原值的拷贝
+ES6 Module 导入的变量是对原值的引用
+CommonJs 是单个值导出，ES6 Module可以导出多个
+CommonJs 是动态语法可以写在判断里，ES6 Module 静态语法只能写在顶层
+CommonJs 的 this 是当前模块，ES6 Module的 this 是 undefined
+
+## 2021.07.19
+
+### node 输入输出
+
+#### 单行输入
+
+```
+const readline = require('readline')
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+rl.on('line', function(line){
+    let tokens = line.split(' ')
+    console.log(result);
+})
+
+```
+
+## 2021.07.16
+
+### js 继承
+
+### 原型继承
+
+child.prototype = new Parent()  
+让子类的原型指向父类实例
+缺点: 1.新实例无法向父类构造函数传参  
+2.单一继承  
+3.所有新实例共享父类实例的属性。(原型上的属性是共享的，一个实例修改了原型属性，另一个实例的原型属性也会被修改)
+
+### 构造函数继承
+
+```
+function child(){
+    Parent.call(this, args);
+}
+```
+
+优点: 1.可以多继承 2.可以像父类构造函数传参
+缺点： 1.只能继承父类构造函数的属性 2.构造函数无法复用,每个新实例都有父类构造函数的副
+
+### 组合继承
+
+原型继承和构造函数继承的组合
+缺点:调用了两次构造函数，子类构造函数会代替原型上的那个父类构造函数
+
+### 寄生式继承
+
+```
+function content(obj){ //传入的是父类的实例
+    function F(){}
+    F.prototype = obj;
+    return new F();
+}
+var parent = new Parent();
+function subobject(parent){//传入的也是父类实例
+    var child = content(parent);
+    return child;
+}
+var child = subobject(parent)
+```
+
+### 寄生组合继承
+
+```
+function content(obj){ //传入的是父类的实例
+    function F(){}
+    F.prototype = obj;
+    return new F();
+}
+var con = content(Parent.prototype) //继承原型属性
+function Sub(){ //继承构造函数属性
+    Parent.call(this);
+}
+Sub.prototype = con;
+con.constructor = Sub;
+var sub1 = new Sub();
+```
+
+## 2021.07.15
+
+### 正则表达式
+
+#### 元字符
+
+```
+. 匹配除换行符以外的任意字符
+\w 匹配字母，数字，下划线，汉字
+\s 匹配任意的空白符
+\d 匹配数字
+\b 匹配单词的开始或结束
+^ 匹配字符串的开始
+$ 匹配字符串的结束
+```
+
+#### 重复限定符
+
+```
+* 重复零次或更多次
++ 重复一次或更多次
+？ 重复零次或一次
+{n} 重复n次
+{n,} 重复n次或更多次
+{n,m} 重复n到m次
+```
+
+#### 分组
+
+^(ab)\*
+
+#### 转义
+
+如果需要匹配()
+^(\(ab\))\*
+匹配的时零个或多个(ab)
+
+#### 条件或
+
+匹配联通的电话号码
+^(130|131|132|155|156|185|186|145|176)\d{8}$
+
+#### 区间
+
+^((13[0-2])|15[5-6]|18[5-6]|145|176)\d{8}$
+
+#### 正向先行断言
+
+语法： (?=pattern)
+
+```
+var reg=/\d{2}\.\d{1}(?=元每斤)/g;
+var str="洋白菜的价格是36.5元每斤，现在太贵了,涨了13元";
+var rst;
+while((rst=reg.exec(str))!=null){
+    console.log(rst);
+}
+```
+
+#### 正向后行断言
+
+语法：（?<=pattern）
+
+#### 负向先行断言
+
+负向断言的意思就是不在模板匹配表达式的前后的字符串匹配  
+语法：(?!pattern)  
+作用：匹配非 pattern 表达式的前面内容，不返回本身。
+
+#### 负向后行断言
+
+语法：(?<!pattern)  
+作用：匹配非 pattern 表达式的后面内容，不返回本身。
+
+## 2021.07.14
+
+### 原生 DOM 操作
+
+```
+getElementById()
+getElementsByTagName()
+getElementsByClassName()
+appendChild()
+removeChild()
+replaceChild()
+insertBefore()
+createAttribute()
+createElement()
+createTextNode()
+setAttribute()
+getAttribute()
+```
+
+## 2021.07.13
+
+### redis 有序集合
+
+zadd 向有序集合中加入一个元素和该元素的分数
+zcard 获取有序集合中的成员数
+zcount key min max 计算在有序集合中指定区间内的成员数
+zincrby key increment member 有序集合对指定成员的分数加上增量
+zscan key cursor 迭代有序集合中的元素
+zrevrange key start stop 按照分数的高低逆序返回元素和元素的分数
+zrevrangebyscore key max min 只返回元素，不返回分数
+
+## 2021.07.12
+
+### 媒体查询
+
+```
+@media screen and (max-width: 300px) and (min-width: 200px) {
+    body {
+        background-color:lightblue;
+    }
+}
+```
+
+## 2021.07.09
+
+完成了 grid 布局的练习
+
+## 模块化规范
+
+### CommonJS 模块与 ES6 模块
+
+CommonJs 模块输出的是一个值的拷贝  
+CommonJS 模块输出的是值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。  
+ES6 模块输出的是值的引用，所以 ES6 是动态引用
+CommonJS 模块是运行时加载，ES6 模块是编译时输出接口
+ES6 模块通过 export 命令显式指定输出的代码，import 时采用静态命令的形式，import 指定加载某个输出值
+CommonJS 模块就是对象，先加载整个模块，生成一个对象，然后在对象上读取方法
+
+## typescript
+
+### interface
+
+限制传入的类型
+
+```
+interface FullName{
+    firstName: string,
+    secondName:  string,
+}
+function printName(name:FullName){
+    console.log(name.firstName+'--'+name.secondName);
+}
+var obj = {
+    firstName: '1',
+    secondName: '2'
+}
+printName(obj)
+```
+
+可选属性接口
+
+```
+secondName?:  string,
+```
+
+## 2021.07.08
+
+## grid 布局
+
+### 容器属性
+
+display: grid  
+grid-template-columns: px | % | repeat | fr | minmax(100px, 1fr) | auto  
+grid-template-rows: 同上  
+grid-row-gap: 行间距  
+grid-column-gap: 列间距  
+grid-gap: 融合属性  
+grid-template-areas  
+grid-auto-flow: column | row;  
+单元格的对齐方式
+justify-items: start | end | center | stretch  
+align-items: start | end | center | stretch  
+placeitems: justify-items | align-items  
+整个内容区域在容器里面的水平|垂直对齐方式
+justify-content: start | end | center | stretch | space-around | space-between | space-evenly  
+align-content: start | end | center | stretch | space-around | space-between | space-evenly  
+place-content: justify-content | align-content  
+项目属性:
+grid-column-start  
+grid-column-end  
+grid-row-start
+grid-row-end
+
+## 文本溢出总结
+
+### 单行文本溢出显示...
+
+```
+overflow: hidden;
+text-overflow:ellipsis;
+white-space: nowrap;
+```
+
+### 多行文本溢出显示...
+
+webkit  
+overflow : hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+其他浏览器的解决方案
+目前没有什么 CSS 的属性可以直接控制多行文本的省略显示，比较靠谱的办法应该就是利用相对定位在最后面加上一个省略号了，代码可以参考下面：
+
+```
+p {
+    position:relative;
+    line-height:1.5em;
+    /* 高度为需要显示的行数*行高，比如这里我们显示两行，则为3 */
+    height:3em;
+    overflow:hidden;
+}
+p:after {
+    content:"...";
+    position:absolute;
+    bottom:0;
+    right:0;
+    padding: 0 5px;
+    background-color: #fff;
+}
+```
+
+溢出直接剪裁
+text-overflow: clip
+
+## 2021.07.07
+
+### flex 练习
+
+实现 header,content,footer 布局
+
+```
+    *{
+    margin: 0;
+    padding: 0;
+}
+body{
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100vh;
+}
+header,footer{
+    display: flex;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(238, 241, 190);
+}
+main{
+    display: flex;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(247, 188, 237);
+    /* 让main主题区充满剩余空间 */
+    flex: 1;
+    height: 90vh;
+}
+```
+
+## 2021.07.06
+
+## flex 布局
+
+flex 容器属性  
+display: flex | inline-flex;
+
+### 主轴方向
+
+flex-direction: flex-direction: row | row-reverse | column | column-reverse;
+
+### 容器内项目是否换行
+
+flex-wrap: nowrap | wrap | wrap-reverse;
+
+### 融合属性
+
+flex-flow: flex-direction | flex-wrap
+
+### 主轴对齐方式
+
+justify-content: flex-start | flex-end | center | space-between | space-around;
+
+### 交叉轴对齐方式
+
+align-items: flex-start | flex-end | center | baseline | stretch;
+
+### 多根轴线对齐方式
+
+align-content: flex-start | flex-end | center | space-between | space-around | stretch;
+
+flex 项目属性:
+
+### 排列顺序
+
+order: 数值越小，排列越靠前
+
+### 设置或检索弹性盒伸缩基准值
+
+flex 子项的宽度是由元素自身尺寸，flex-basis 设置的基础尺寸，flex-grow,flex-shrink 等 3 者共同决定的
+flex-basis: 基础尺寸
+
+### 伸缩
+
+flex-grow flex-shrink
+
+### 融合属性
+
+flex: flex-grow | flex-shrink | flex-basis
+flex: flex-grow
+为百分比的时候是 flex-basis 的值
+
+### 单个项目的对齐方式
+
+align-self: auto | flex-start | flex-end | center | baseline | stretch;
+
+## 2021.07.05
+
+## 操作系统
+
+### 进程调度
+
+### 页面置换
+
+### 磁盘调度
+
+### CSS 定位练习
+
+写一个分割按钮  
+#left{
+position: fixed;
+top: 93%;
+left: 36%;
+height: 35px;
+width: 130px;
+border-radius: 15px 0 0 15px;
+border: 2px solid red;
+background-color: white;
+text-align: center;
+z-index: 2;
+color: red;
+line-height: 30px;
+}
+#right{
+position: fixed;
+top: 93%;
+left: 71.5%;
+height: 35px;
+width: 100px;
+border-radius: 0 15px 15px 0;
+border: 2px solid red;
+background-color: red;
+text-align: center;
+color: white;
+line-height: 30px;
+}
+#triangle {
+position: fixed;
+top: 93%;
+left: 63.5%;
+width: 0;
+height: 0;
+border-bottom: 39px solid red;
+border-left: 30px solid transparent;
+z-index: 3;
+}
+
+## 2021.07.02
+
+## CSS 动画
+
+### transition 过渡
+
+transition-property | transition-duration | transition-timing-function | transition-delay  
+其中 transition-timing-function 的取值 linear | ease | ease-in | ease-out | ease-in-out, cubic-bezier(n,n,n,n)
+
+### animation 动画
+
+animation-name | animation-duration | animation-timing-function | animation-delay | animation-iteration-count | animation-direction
+@keyframes forward {  
+ 0% {color: red;}  
+ 50% {color: green}  
+ 100% {color: blue}  
+}
+
+animation: forward 4s;
+
+### transform 变换
+
+translate(X,Y);  
+translateX(50px);  
+translateY(50px);  
+skew(X,Y); 倾斜变换  
+scale(0.8);
+rotate(90deg)
+
+## JS 属性的不变性
+
+Object.preventExtensions(obj) 禁止扩展  
+Object.seal(obj) 只能修改属性的值  
+Object.freeze(obj) 不能修改
+
+## V8 垃圾回收机制
+
+新生代和老生代  
+新生代存放临时对象,老生代存放持久对象  
+主垃圾回收器负责老生代的垃圾回收，主要的步骤如下：标记 -> 清除 -> 内存整理  
+副垃圾回收器负责新生代的垃圾回收，新生代一半是对象区域，一般是空闲区，对象区域和空闲区域反复交换
+
+## 2021.07.01
+
+## nginx
+
+### nginx 命令
+
+nginx start 启动  
+nginx -s stop 终止  
+nginx -s reload 重启
+
+### nginx 配置文件
+
+nginx.conf 部署 vue 项目  
+root 修改为项目中的 dist 文件夹  
+同时修改 router 配置
+
+### nginx 代理配置
+
+代理分为正向代理，反向代理，透明代理  
+通过 location 中 proxy_pass,proxy_set_header 设置目标网址  
+配置缓存大小，关闭磁盘缓存读写减少 I/O，以及代理连接超时时间。  
+proxy_buffers 256 4k;  
+proxy_max_temp_file_size 0;  
+proxy_connect_timeout 30;  
+反向代理也是 CDN 技术的核心，对于一些静态资源，可以直接缓存在代理服务器上，提高访问速度  
+反向代理也可以负载均衡，代理服务器构成一个集群，不同的用户由不同的代理去请求资源  
+如果一台虚拟主机代理多台服务器，设置地址池  
+其他的配置大致相同  
+透明代理主要是修改和拦截请求
+
+## git
+
+工作区 -> 暂存区 -> 仓库
+
+### git 命令
+git pull  
+git add .  
+git commit  
+git push  
+git stash 缓存部分的工作目录  
+git stash pop 恢复之前缓存的目录  
+git branch name  
+git checkout - b name  
+git checkout name  
+git merge  
+git reset --soft --mixed --hard  
+--soft 只回退 head 指针，节点的不同存放在暂存区  
+--mixed 工作区不变，暂存区和仓库回滚，差别保存在工作目录中  
+--hard 全部干掉  
+git revert <commit1>..<commit2> 前开后闭  
+撤销指定的提交，其余的提交会生成一个新的版本，head 指针向前移动一个  
+git status  
+git rebase 上游分支 变基 有冲突解决冲突  
+git rebase --continue --abort  
+rebase 会利用之前的提交信息，将发展出来的这个分支进行合并更新，并且接在主分支的末尾，之前的无用分支被丢弃  
+和 merge 主要的区别是版本之间的关系会更加清晰，会是一条直线
 
