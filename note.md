@@ -6146,3 +6146,19 @@ git rebase --continue --abort
 rebase 会利用之前的提交信息，将发展出来的这个分支进行合并更新，并且接在主分支的末尾，之前的无用分支被丢弃  
 和 merge 主要的区别是版本之间的关系会更加清晰，会是一条直线
 
+## 9.16
+### java三层架构
+Struts（表示层）+Spring（业务层）+Hibernate（持久层）
+许多设计良好的web应用，可以被按职责分为四层。这些层次是表现层、持久层、业务层、和域模型层。
+
+## 9.18
+### nestjs依赖注入
+ 1.Provider 只是一个用 @Injectable() 装饰器注释的类。
+ 2.这是依赖注入的地方，一般是在类的构造函数constructor中注入，只有完成注入后才可以使用
+  constructor(private readonly appService: AppService) {}
+3. 依赖注入后还需要在Module中进行关联
+@Module({
+  controllers: [AppController],
+  providers: [AppService],
+})
+Nest会根据所有注入的依赖关系生成一个依赖关系图，就有点类似我们使用import引入各个模块时也会生成一个复杂的依赖关系图。这里AppController中依赖了AppService，如果AppService中还依赖其它东西也会一并放到Nest构建的依赖关系图中，Nest会从下到上按照依赖顺序构建出一整张依赖关系图保证所有的依赖关系正常运作。
