@@ -6162,3 +6162,76 @@ Struts（表示层）+Spring（业务层）+Hibernate（持久层）
   providers: [AppService],
 })
 Nest会根据所有注入的依赖关系生成一个依赖关系图，就有点类似我们使用import引入各个模块时也会生成一个复杂的依赖关系图。这里AppController中依赖了AppService，如果AppService中还依赖其它东西也会一并放到Nest构建的依赖关系图中，Nest会从下到上按照依赖顺序构建出一整张依赖关系图保证所有的依赖关系正常运作。
+
+## 9.19 Nestjs的异常处理
+Nest提供了一个内置的 HttpException 类，它从 @nestjs/common 包中导入。
+自定义异常
+如果确实需要创建自定义的异常，则最好创建自己的异常层次结构，其中自定义异常继承自 HttpException 基类。
+export class ForbiddenException extends HttpException {
+  constructor() {
+    super('Forbidden', HttpStatus.FORBIDDEN);
+  }
+}
+
+## 9.20 Nestjs管道
+@Get(':id')
+async findOne(@Param('id', ParseIntPipe) id: number) {
+  return this.catsService.findOne(id);
+}
+在上面的例子中，我们传递了一个 ParseIntPipe 类，而不是一个实例，把实例化的责任留给了框架，并实现了依赖注入。就像管道和守卫一样，我们也可以传递一个实例。
+自定义管道
+@Post()
+async create(@Body() createCatDto: CreateCatDto) {
+  this.catsService.create(createCatDto);
+}
+
+我们要确保任何进入创建方法的请求都包含一个有效的主体
+
+自定义的验证管道，实现pipetransform
+```
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import { ObjectSchema } from 'joi';
+
+@Injectable()
+export class JoiValidationPipe implements PipeTransform {
+  constructor(private schema: ObjectSchema) {}
+
+  transform(value: any, metadata: ArgumentMetadata) {
+    const { error } = this.schema.validate(value);
+    if (error) {
+      throw new BadRequestException('Validation failed');
+    }
+    return value;
+  }
+```
+JOI模式的例子
+export const createCatSchema = Joi.object({
+  name: Joi.string().required(),
+  age: Joi.number().required(),
+  breed: Joi.string().required(),
+});
+
+export interface CreateCatDto {
+  name: string;
+  age: number;
+  breed: string;
+}
+@Post()
+@UsePipes(new JoiValidationPipe(createCatSchema))
+async create(@Body() createCatDto: CreateCatDto) {
+  this.catsService.create(createCatDto);
+}
+类校验器
+import { IsString, IsInt } from "class-validator";
+
+export class CreateCatDto {
+  @IsString()
+  name: string;
+
+  @IsInt()
+  age: number;
+
+  @IsString()
+  breed: string;
+}
+
