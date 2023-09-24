@@ -6147,6 +6147,7 @@ git rebase --continue --abort
 rebase 会利用之前的提交信息，将发展出来的这个分支进行合并更新，并且接在主分支的末尾，之前的无用分支被丢弃  
 和 merge 主要的区别是版本之间的关系会更加清晰，会是一条直线
 
+# 2023
 ## 9.16
 ### java三层架构
 Struts（表示层）+Spring（业务层）+Hibernate（持久层）
@@ -6235,4 +6236,8 @@ export class CreateCatDto {
   @IsString()
   breed: string;
 }
+## 9.24
+### SpringBoot中的各层
+View层👉Controller层（响应用户请求）👉Service层（接口👉接口实现类）👉DAO层，即Mapper层（抽象类：xxxMapper.java文件，具体实现在xxxMapper.xml）👉Model层（实体类：xxx.java）
 
+DTO：数据传输对象，一般是把数据库表封装成对象，表的各个字段就是该对象的各个变量。
