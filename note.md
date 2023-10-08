@@ -1555,29 +1555,29 @@ Gamma校正就是一种全局色调映射方法
 ### Webpack第N遍复习
 ![webpack](./assets/webpack.webp)
 常见loader(开始报菜名)
-1.raw-loader 加载文件原始内容
-2.file-loader 把文件输出到一个文件夹中,在代码中通过相对URL去引用输出的文字
-3.url-loader 与file-loader类似，区别是用户可以设置一个阈值,大于阈值交给file-loader处理，
+1. raw-loader 加载文件原始内容
+2. file-loader 把文件输出到一个文件夹中,在代码中通过相对URL去引用输出的文字
+3. url-loader 与file-loader类似，区别是用户可以设置一个阈值,大于阈值交给file-loader处理，
 小于阈值时返回文件base64形式编码
-4.source-map-loader 加载额外的Source Map文件,以方便断点调试
-5.svg-inline-loader 将压缩的SVG内容注入代码中
-6.image-loader 加载并且压缩图片文件
-7.json-loader 加载JSON文件
-8.babel-loader 将ES6转换成ES5
-9.ts-loader 将Typescript转换成JavaScript
-10.css-loader 加载css,支持模块化,压缩,文件导入等特性
-11.style-loader 将css代码注入到JavaScript中
-12.postcss-loader 扩展CSS语法,使用下一代CSS
+4. source-map-loader 加载额外的Source Map文件,以方便断点调试
+5. svg-inline-loader 将压缩的SVG内容注入代码中
+6. image-loader 加载并且压缩图片文件
+7. json-loader 加载JSON文件
+8. babel-loader 将ES6转换成ES5
+9. ts-loader 将Typescript转换成JavaScript
+10. css-loader 加载css,支持模块化,压缩,文件导入等特性
+11. style-loader 将css代码注入到JavaScript中
+12. postcss-loader 扩展CSS语法,使用下一代CSS
 
 常见Plugin
-1.define-plugin 定义环境变量
-2.html-webpack-plugin 简化HTML文件创建
-3.uglifyjs-webpack-plugin 不支持ES6压缩
-4.terser-webpack-plugin 支持压缩ES6
-5.webpack-parallel-uglify-plugin 多进程压缩执行代码压缩,提升构建速度
-6.mini-css-extract-plugin 分离样式文件,css提取为独立文件,支持按需加载
-7.serviceworker-webpack-plugin 为网页应用增加离线缓存功能
-8.clean-webpack-plugin 目录清理
+1. define-plugin 定义环境变量
+2. html-webpack-plugin 简化HTML文件创建
+3. uglifyjs-webpack-plugin 不支持ES6压缩
+4. terser-webpack-plugin 支持压缩ES6
+5. webpack-parallel-uglify-plugin 多进程压缩执行代码压缩,提升构建速度
+6. mini-css-extract-plugin 分离样式文件,css提取为独立文件,支持按需加载
+7. serviceworker-webpack-plugin 为网页应用增加离线缓存功能
+8. clean-webpack-plugin 目录清理
 
 Webpack构建流程
 Webpack的运行流程
